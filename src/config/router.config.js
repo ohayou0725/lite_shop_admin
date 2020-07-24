@@ -22,25 +22,209 @@ export const asyncRouterMap = [
         name: 'dashboard',
         redirect: '/dashboard/workplace',
         component: RouteView,
-        meta: { title: 'menu.dashboard', keepAlive: true, icon: bxAnaalyse, permission: [ 'dashboard' ] },
+        meta: { title: 'menu.dashboard', keepAlive: true, icon: bxAnaalyse},
         children: [
-          {
-            path: '/dashboard/analysis/:pageNo([1-9]\\d*)?',
-            name: 'Analysis',
-            component: () => import('@/views/dashboard/Analysis'),
-            meta: { title: 'menu.dashboard.analysis', keepAlive: false, permission: [ 'dashboard' ] }
-          },
-          // 外部链接
-          {
-            path: 'https://www.baidu.com/',
-            name: 'Monitor',
-            meta: { title: 'menu.dashboard.monitor', target: '_blank' }
-          },
           {
             path: '/dashboard/workplace',
             name: 'Workplace',
             component: () => import('@/views/dashboard/Workplace'),
-            meta: { title: 'menu.dashboard.workplace', keepAlive: true, permission: [ 'dashboard' ] }
+            meta: { title: 'menu.dashboard.workplace', keepAlive: true ,icon: 'home' }
+          }
+        ]
+      },
+      {
+        path : '/member',
+        name : 'member',
+        component: RouteView,
+        meta : {title: '会员管理',keepAlive: true, icon: 'crown',permission:['超级管理员']},
+        redirect: '/member',
+        children: [
+          {
+            path: '/member/list',
+            name: 'memberList',
+            component: () => import('@/views/member/MemberList'),
+            meta: {title: '会员列表',keepAlive: true, icon:'team',permission:['超级管理员']}
+          },
+          {
+            path: '/member/address',
+            name: 'address',
+            component: () => import('@/views/member/Address'),
+            meta: {title: '收货地址',keepAlive: true, icon:'compass',permission:['超级管理员']}
+          },
+          {
+            path: '/member/collect',
+            name: 'collect',
+            component: () => import('@/views/member/Collect'),
+            meta: {title: '会员收藏',keepAlive: true, icon:'book',permission:['超级管理员']}
+          },
+          {
+            path: '/member/history',
+            name: 'history',
+            component: () => import('@/views/member/History'),
+            meta: {title: '会员足迹',keepAlive: true, icon:'history',permission:['超级管理员']}
+          },{
+            path: '/member/opinion',
+            name: 'opinion',
+            component: () => import('@/views/member/Opinion'),
+            meta: {title: '意见反馈',keepAlive: true, icon:'solution',permission:['超级管理员']}
+          }
+        ]
+      },
+
+      {
+        path : '/product',
+        name : 'product',
+        component: RouteView,
+        meta : {title: '商品管理',keepAlive: true, icon: 'shopping',permission:['超级管理员','商品管理员']},
+        redirect: '/product',
+        children: [
+          {
+            path: '/product/brand',
+            name: 'brand',
+            component: () => import('@/views/product/Brand'),
+            meta: {title: '商品制造商',keepAlive: true, icon:'trademark',permission:['超级管理员','商品管理员']}
+          },
+          {
+            path: '/product/category',
+            name: 'category',
+            component: () => import('@/views/product/Category'),
+            meta: {title: '商品类目',keepAlive: true, icon:'bars',permission:['超级管理员','商品管理员']}
+          },
+          {
+            path: '/product/list',
+            name: 'productList',
+            component: () => import('@/views/product/ProductList'),
+            meta: {title: '商品维护',keepAlive: true, icon:'table',permission:['超级管理员','商品管理员']}
+          },
+          {
+            path: '/product/add_product',
+            name: 'addProduct',
+            component: () => import('@/views/product/AddProduct'),
+            meta: {title: '商品上架',keepAlive: true, icon:'file-add',permission:['超级管理员','商品管理员']}
+          }
+        ]
+      },
+      {
+        path : '/order',
+        name : 'order',
+        component: RouteView,
+        meta : {title: '订单管理',keepAlive: true, icon: 'shop',permission:['超级管理员','订单管理员']},
+        redirect: '/order',
+        children: [
+          {
+            path: '/order/list',
+            name: 'orderList',
+            component: () => import('@/views/order/OrderList'),
+            meta: {title: '订单列表',keepAlive: true, icon:'project' ,permission:['超级管理员','订单管理员']}
+          },
+          {
+            path: '/order/aftersale',
+            name: 'aftersale',
+            component: () => import('@/views/order/Aftersale'),
+            meta: {title: '售后管理',keepAlive: true, icon:'reconciliation',permission:['超级管理员','订单管理员']}
+          },
+          {
+            path: '/order/comment',
+            name: 'comment',
+            component: () => import('@/views/order/Comment'),
+            meta: {title: '评价管理',keepAlive: true, icon:'message' ,permission:['超级管理员','订单管理员']}
+          }
+        ]
+      },
+      {
+        path : '/operation',
+        name : 'operation',
+        component: RouteView,
+        meta : {title: '运营管理',keepAlive: true, icon: 'account-book' ,permission:['超级管理员','运营管理员']},
+        redirect: '/operation',
+        children: [
+          {
+            path: '/operation/topic',
+            name: 'topic',
+            component: () => import('@/views/operation/Topic'),
+            meta: {title: '专题管理',keepAlive: true, icon:'skin',permission:['超级管理员','运营管理员']}
+          },
+          {
+            path: '/operation/coupon',
+            name: 'coupon',
+            component: () => import('@/views/operation/Coupon'),
+            meta: {title: '优惠券管理',keepAlive: true, icon:'barcode',permission:['超级管理员','运营管理员']}
+          }
+        ]
+      },
+      {
+        path : '/system',
+        name : 'system',
+        component: RouteView,
+        meta : {title: '系统管理',keepAlive: true, icon: 'desktop',permission:['超级管理员']},
+        redirect: '/system',
+        children: [
+          {
+            path: '/system/admin',
+            name: 'admin',
+            component: () => import('@/views/system/Admin'),
+            meta: {title: '后台用户管理',keepAlive: true, icon:'user',permission:['超级管理员']}
+          },
+          {
+            path: '/system/role',
+            name: 'role',
+            component: () => import('@/views/system/Role'),
+            meta: {title: '角色管理',keepAlive: true, icon:'safety-certificate',permission:['超级管理员']}
+          },
+          {
+            path: '/system/log',
+            name: 'log',
+            component: () => import('@/views/system/Log'),
+            meta: {title: '操作日志',keepAlive: true, icon:'file-text',permission:['超级管理员']}
+          }
+        ]
+      },
+      {
+        path : '/setting',
+        name : 'setting',
+        component: RouteView,
+        meta : {title: '系统设置',keepAlive: true, icon: 'setting',permission:['超级管理员','运营管理员','订单管理员']},
+        redirect: '/setting',
+        children: [
+          {
+            path: '/setting/order',
+            name: 'orderConfig',
+            component: () => import('@/views/setting/OrderSetting'),
+            meta: {title: '订单设置',keepAlive: true, icon:'red-envelope',permission:['超级管理员','订单管理员']}
+          },
+          {
+            path: '/setting/freight',
+            name: 'freight',
+            component: () => import('@/views/setting/Freight'),
+            meta: {title: '运费设置',keepAlive: true, icon:'money-collect',permission:['超级管理员','运营管理员']}
+          }
+        ]
+      },
+
+      {
+        path : '/statistics',
+        name : 'statistics',
+        component: RouteView,
+        meta : {title: '统计报表',keepAlive: true, icon: 'calculator',permission:['超级管理员','商品管理员','订单管理员']},
+        redirect: '/statistics',
+        children: [
+          {
+            path: '/statistics/member',
+            name: 'memberStatistics',
+            component: () => import('@/views/statistics/MemberStatistics'),
+            meta: {title: '用户统计',keepAlive: true, icon:'team',permission:['超级管理员']}
+          },
+          {
+            path: '/statistics/product',
+            name: 'productStatistics',
+            component: () => import('@/views/statistics/ProductStatistics'),
+            meta: {title: '商品统计',keepAlive: true, icon:'trademark',permission:['超级管理员','商品管理员']}
+          },
+          {
+            path: '/statistics/order',
+            name: 'orderStatistics',
+            component: () => import('@/views/statistics/OrderStatistics'),
+            meta: {title: '订单统计',keepAlive: true, icon:'project',permission:['超级管理员','订单管理员']}
           }
         ]
       },
@@ -211,19 +395,19 @@ export const asyncRouterMap = [
         component: RouteView,
         redirect: '/account/center',
         name: 'account',
-        meta: { title: '个人页', icon: 'user', keepAlive: true, permission: [ 'user' ] },
+        meta: { title: '个人页', icon: 'user', keepAlive: true },
         children: [
           {
             path: '/account/center',
             name: 'center',
             component: () => import('@/views/account/center'),
-            meta: { title: '个人中心', keepAlive: true, permission: [ 'user' ] }
+            meta: { title: '个人中心', keepAlive: true }
           },
           {
             path: '/account/settings',
             name: 'settings',
             component: () => import('@/views/account/settings/Index'),
-            meta: { title: '个人设置', hideHeader: true, permission: [ 'user' ] },
+            meta: { title: '个人设置', hideHeader: true},
             redirect: '/account/settings/base',
             hideChildrenInMenu: true,
             children: [
@@ -231,31 +415,31 @@ export const asyncRouterMap = [
                 path: '/account/settings/base',
                 name: 'BaseSettings',
                 component: () => import('@/views/account/settings/BaseSetting'),
-                meta: { title: '基本设置', hidden: true, permission: [ 'user' ] }
+                meta: { title: '基本设置', hidden: true}
               },
               {
                 path: '/account/settings/security',
                 name: 'SecuritySettings',
                 component: () => import('@/views/account/settings/Security'),
-                meta: { title: '安全设置', hidden: true, keepAlive: true, permission: [ 'user' ] }
+                meta: { title: '安全设置', hidden: true, keepAlive: true}
               },
               {
                 path: '/account/settings/custom',
                 name: 'CustomSettings',
                 component: () => import('@/views/account/settings/Custom'),
-                meta: { title: '个性化设置', hidden: true, keepAlive: true, permission: [ 'user' ] }
+                meta: { title: '个性化设置', hidden: true, keepAlive: true }
               },
               {
                 path: '/account/settings/binding',
                 name: 'BindingSettings',
                 component: () => import('@/views/account/settings/Binding'),
-                meta: { title: '账户绑定', hidden: true, keepAlive: true, permission: [ 'user' ] }
+                meta: { title: '账户绑定', hidden: true, keepAlive: true}
               },
               {
                 path: '/account/settings/notification',
                 name: 'NotificationSettings',
                 component: () => import('@/views/account/settings/Notification'),
-                meta: { title: '新消息通知', hidden: true, keepAlive: true, permission: [ 'user' ] }
+                meta: { title: '新消息通知', hidden: true, keepAlive: true}
               }
             ]
           }
@@ -326,6 +510,7 @@ export const asyncRouterMap = [
       */
     ]
   },
+
   {
     path: '*', redirect: '/404', hidden: true
   }

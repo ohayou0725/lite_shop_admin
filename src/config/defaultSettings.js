@@ -23,8 +23,8 @@ export default {
   menu: {
     locale: true
   },
-  title: 'Ant Design Pro',
+  title: 'Lite Shop后台管理系统',
   pwa: false,
-  iconfontUrl: '',
+  iconfontUrl: require('../assets/iconfont/iconfont.js'),
   production: process.env.NODE_ENV === 'production' && process.env.VUE_APP_PREVIEW !== 'true'
 }

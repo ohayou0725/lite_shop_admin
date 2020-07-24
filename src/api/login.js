@@ -1,16 +1,17 @@
 import request from '@/utils/request'
+import { BASE_URL } from '@ant-design-vue/pro-layout/lib/utils/request'
 
 const userApi = {
-  Login: '/auth/login',
-  Logout: '/auth/logout',
+  Login:  '/user/login',
+  Logout: '/user/logout',
   ForgePassword: '/auth/forge-password',
   Register: '/auth/register',
   twoStepCode: '/auth/2step-code',
   SendSms: '/account/sms',
-  SendSmsErr: '/account/sms_err',
+  SendSmsErr:'/account/sms_err',
   // get my info
   UserInfo: '/user/info',
-  UserMenu: '/user/nav'
+  UserMenu:'/user/nav'
 }
 
 /**
