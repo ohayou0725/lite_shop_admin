@@ -1,14 +1,10 @@
 <template>
-  <page-view>
-
-  </page-view>
+  <page-header-wrapper></page-header-wrapper>
 </template>
 
 <script>
-    import PageView from '@/layouts/PageView'
     export default {
         name: 'MemberList',
-      components: { PageView }
     }
 </script>
 

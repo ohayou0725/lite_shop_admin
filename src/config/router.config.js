@@ -37,7 +37,7 @@ export const asyncRouterMap = [
         name : 'member',
         component: RouteView,
         meta : {title: '会员管理',keepAlive: true, icon: 'crown',permission:['超级管理员']},
-        redirect: '/member',
+        redirect: '/member/list',
         children: [
           {
             path: '/member/list',
@@ -76,7 +76,7 @@ export const asyncRouterMap = [
         name : 'product',
         component: RouteView,
         meta : {title: '商品管理',keepAlive: true, icon: 'shopping',permission:['超级管理员','商品管理员']},
-        redirect: '/product',
+        redirect: '/product/list',
         children: [
           {
             path: '/product/brand',
@@ -109,7 +109,7 @@ export const asyncRouterMap = [
         name : 'order',
         component: RouteView,
         meta : {title: '订单管理',keepAlive: true, icon: 'shop',permission:['超级管理员','订单管理员']},
-        redirect: '/order',
+        redirect: '/order/list',
         children: [
           {
             path: '/order/list',
@@ -136,7 +136,7 @@ export const asyncRouterMap = [
         name : 'operation',
         component: RouteView,
         meta : {title: '运营管理',keepAlive: true, icon: 'account-book' ,permission:['超级管理员','运营管理员']},
-        redirect: '/operation',
+        redirect: '/operation/topic',
         children: [
           {
             path: '/operation/topic',
@@ -157,7 +157,7 @@ export const asyncRouterMap = [
         name : 'system',
         component: RouteView,
         meta : {title: '系统管理',keepAlive: true, icon: 'desktop',permission:['超级管理员']},
-        redirect: '/system',
+        redirect: '/system/admin',
         children: [
           {
             path: '/system/admin',

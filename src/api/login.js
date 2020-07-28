@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import { BASE_URL } from '@ant-design-vue/pro-layout/lib/utils/request'
 
 const userApi = {
   Login:  '/user/login',

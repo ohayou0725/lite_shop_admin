@@ -20,13 +20,13 @@ const errorHandler = (error) => {
     const token = window.sessionStorage.getItem(ACCESS_TOKEN)
     if (data.code === 40300) {
       notification.error({
-        message: 'Forbidden',
+        message: '权限不足',
         description: data.msg
       })
     }
     if (data.code === 400203 || data.code === 400204) {
       notification.error({
-        message: 'Unauthorized',
+        message: '用户未认证',
         description: data.msg
       })
       if (token) {
