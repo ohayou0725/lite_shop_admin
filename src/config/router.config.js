@@ -101,6 +101,12 @@ export const asyncRouterMap = [
             name: 'addProduct',
             component: () => import('@/views/product/AddProduct'),
             meta: {title: '商品上架',keepAlive: true, icon:'file-add',permission:['超级管理员','商品管理员']}
+          },
+          {
+            path: '/product/comment',
+            name: 'comment',
+            component: () => import('@/views/product/Comment'),
+            meta: {title: '商品评价',keepAlive: true, icon:'message' ,permission:['超级管理员','商品管理员']}
           }
         ]
       },
@@ -122,12 +128,6 @@ export const asyncRouterMap = [
             name: 'aftersale',
             component: () => import('@/views/order/Aftersale'),
             meta: {title: '售后管理',keepAlive: true, icon:'reconciliation',permission:['超级管理员','订单管理员']}
-          },
-          {
-            path: '/order/comment',
-            name: 'comment',
-            component: () => import('@/views/order/Comment'),
-            meta: {title: '评价管理',keepAlive: true, icon:'message' ,permission:['超级管理员','订单管理员']}
           }
         ]
       },

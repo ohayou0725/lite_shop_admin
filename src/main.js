@@ -20,11 +20,13 @@ import './core/lazy_use'
 import './permission' // permission control
 import './utils/filter' // global filter
 import './global.less'
-
+import vuePhotoPreview from 'vue-photo-preview/src/lib'
+import 'vue-photo-preview/dist/skin.css'
 Vue.config.productionTip = false
 
 // mount axios to `Vue.$http` and `this.$http`
 Vue.use(VueAxios)
+Vue.use(vuePhotoPreview)
 Vue.component('pro-layout', ProLayout)
 Vue.component('page-header-wrapper', PageHeaderWrapper)
 

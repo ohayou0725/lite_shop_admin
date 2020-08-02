@@ -123,7 +123,7 @@
         queryParam: {
           admin: '',
           status: '',
-          operatingTime: moment(new Date(),"YYYY-mm-dd"),
+          operatingTime: moment().format('YYYY-MM-DD'),
           page : 1,
           size : 10
         },
@@ -173,7 +173,7 @@
           } else {
             notification.error({
               message: '错误',
-              description: res.data.msg
+              description: res.msg
             })
           }
         })
