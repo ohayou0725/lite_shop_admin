@@ -301,10 +301,10 @@
       submit (e) {
         e.preventDefault()
         this.form.validateFields((err, values) => {
-          console.log(values)
           if (err) {
             return
           }
+          values.img = this.uploadImg
           if (this.isAdd) {
             const parentId = this.form.getFieldValue("parentId")
             if (parentId === null) {
@@ -376,6 +376,7 @@
       onClose () {
         this.visible = false
         this.selectCategory.parentId = null
+        this.fileList = []
         this.form.resetFields()
       },
       editAttr(record) {
