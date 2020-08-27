@@ -16,6 +16,7 @@
     "ant-design-vue": "^1.6.2",
     "axios": "^0.19.0",
     "core-js": "^3.1.2",
+    "decimal.js": "^10.2.0",
     "enquire.js": "^2.1.6",
     "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",

@@ -13,7 +13,6 @@ import PageLoading from '@/components/PageLoading'
 import PermissionHelper from '@/utils/helper/permission'
 // import '@/components/use'
 import './directives/action'
-
 VueClipboard.config.autoSetContainer = true
 
 Vue.use(Antd)
@@ -23,6 +22,5 @@ Vue.use(PageLoading)
 Vue.use(VueClipboard)
 Vue.use(PermissionHelper)
 Vue.use(VueCropper)
-
 
 process.env.NODE_ENV !== 'production' && console.warn('[antd-pro] WARNING: Antd now use fulled imported.')

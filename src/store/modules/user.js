@@ -38,6 +38,7 @@ const user = {
       return new Promise((resolve, reject) => {
         login(userForm).then(response => {
           const result = response.data
+
           // storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
           commit('SET_TOKEN', window.sessionStorage.getItem(ACCESS_TOKEN))
           resolve()

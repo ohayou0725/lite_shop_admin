@@ -62,7 +62,7 @@
         <a-form-item label="品牌商名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-input v-decorator="['name', {rules:[{required: true, message: '请输入品牌商名称'}]}]" />
         </a-form-item>
-        <a-form-item label="分类图片" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="品牌logo" :labelCol="labelCol" :wrapperCol="wrapperCol">
           <a-upload
             :fileList="fileList"
             list-type="picture"

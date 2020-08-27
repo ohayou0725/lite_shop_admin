@@ -191,7 +191,8 @@
         this.getData(this.queryParam)
       },
       selectDate(date,dateString) {
-        this.queryParam.registerDate = dateString
+        console.log(dateString)
+        this.queryParam.registerDate = date !== null ? dateString : null
       },
       changeStatus(record) {
         changeStatus({

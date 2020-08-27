@@ -27,14 +27,14 @@ const errorHandler = (error) => {
     if (data.code === 400203 || data.code === 400204) {
       notification.error({
         message: '用户未认证',
-        description: data.msg
+        description: "认证过期，请重新登录"
       })
-      if (token) {
-        store.dispatch('Logout').then(() => {
-          setTimeout(() => {
-            window.location.reload()
-          }, 1500)
-        })
+      
+    if (token) {
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
+      window.sessionStorage.removeItem(ACCESS_TOKEN)
       }
     }
   }

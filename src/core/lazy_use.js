@@ -47,7 +47,10 @@ import {
   notification,
   Tree,
   AutoComplete,
-  TreeSelect
+  TreeSelect,
+  Cascader,
+  Carousel,
+  Collapse,
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
@@ -103,6 +106,9 @@ Vue.use(Descriptions)
 Vue.use(Tree)
 Vue.use(AutoComplete)
 Vue.use(TreeSelect)
+Vue.use(Cascader)
+Vue.use(Carousel)
+Vue.use(Collapse)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message

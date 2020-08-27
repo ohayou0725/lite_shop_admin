@@ -186,8 +186,8 @@
         this.loading = false
       },
       selectDate(date,dateString) {
-        this.queryParam.operatingTime = dateString
-        console.log(this.queryParam.operatingTime)
+        this.queryParam.operatingTime = date !== null ? dateString : null
+
       }
     }
   }

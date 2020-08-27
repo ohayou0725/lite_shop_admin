@@ -7,7 +7,14 @@ const api = {
     addCategory : '/product/brand/addCategory',
     deleteCategory : '/product/brand/deleteCategory',
     updateBrand : '/product/brand/update',
-    deleteBrand : '/product/brand/delete'
+    deleteBrand : '/product/brand/delete',
+    all : '/product/brand/all'
+}
+export function getAllBrand() {
+    return request({
+        url : api.all,
+        method : 'get',
+    })
 }
 
 export function getBrandList(param) {
