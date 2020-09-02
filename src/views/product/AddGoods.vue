@@ -168,6 +168,20 @@
           </a-form-item>
         </div>
         <a-form-item
+          label="商品重量(单位:kg)"
+          :labelCol="{lg: {span: 7}, sm: {span: 7}}"
+          :wrapperCol="{lg: {span: 2}, sm: {span: 2} }"
+          :required="true"
+        >
+          <a-input-number
+            v-decorator="[
+              'weight',
+              {rules: [{ required: true, message: '请输入商品重量' }]}
+            ]"
+            :precision="2"
+          />
+        </a-form-item>
+        <a-form-item
           label="排序号"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 2}, sm: {span: 2} }"
@@ -480,6 +494,7 @@ export default {
       goodsForm.sort = this.goodsDetail.sort
       goodsForm.unit = this.goodsDetail.unit
       goodsForm.price = this.goodsDetail.price
+      goodsForm.weight = this.goodsDetail.weight
       goodsForm.discountPrice =
         typeof this.goodsDetail.discountPrice != 'undefined' ? this.goodsDetail.discountPrice : this.goodsDetail.price
       goodsForm.detail = this.goodsDetail.detail
@@ -595,7 +610,6 @@ export default {
       }
     },
     deleteSpec(key) {
-      console.log(key)
       this.specs.splice(key, 1)
     },
     addSpec() {

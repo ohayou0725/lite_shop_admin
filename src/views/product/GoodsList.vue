@@ -70,41 +70,67 @@
         </a-row>
       </a-form>
     </div>
-    <a-spin :spinning='loading'>
-    <a-table
-      bordered
-      :data-source="spuList"
-      :loading="loading"
-      :columns="columns"
-       rowKey="{record=>record.id}"
-      :pagination="pagination"
-      :scroll="scroll"
-    >
-      <template slot="name" slot-scope="text,record">
-        <a style="font-size:2px" @click="clickGetDetail(record.id)">{{text}}</a>
-      </template>
-      <template slot="titleImg" slot-scope="text,record">
-        <img :src="text" width="80px" />
-      </template>
-      <template slot="brand" slot-scope="text,record">
-        <img :src="text" width="40px" />
-      </template>
-      <template slot="status" slot-scope="text,record">
-        <a-tag v-if="text == 1" color="blue">在售</a-tag>
-        <a-tag v-else color="red">未上架</a-tag>
-      </template>
-      <template slot="tag" slot-scope="text,record">
-        <a-tag v-if="record.isNew == 1" color="green">新品</a-tag>
-        <a-tag v-if="record.hot == 1" color="red">热卖</a-tag>
-      </template>
-      <span slot="action" slot-scope="text, record">
-        <template>
-          <a @click="handleEdit(record)">编辑</a>
-          <a-divider type="vertical" />
-          <a @click="handleSub(record)">删除</a>
+    <a-spin :spinning="loading">
+      <a-table
+        bordered
+        :data-source="spuList"
+        :loading="loading"
+        :columns="columns"
+        rowKey="{record=>record.id}"
+        :pagination="pagination"
+        :scroll="scroll"
+      >
+        <template slot="name" slot-scope="text,record">
+          <a-tooltip>
+            <template slot="title">点击查看商品详情</template>
+            <a style="font-size:2px" @click="clickGetDetail(record.id)">{{text}}</a>
+          </a-tooltip>
         </template>
-      </span>
-    </a-table>
+        <template slot="titleImg" slot-scope="text,record">
+          <img :src="text" width="80px" />
+        </template>
+        <template slot="brand" slot-scope="text,record">
+          <img :src="text" width="40px" />
+        </template>
+        <template slot="status" slot-scope="text,record">
+          <a-switch
+            checked-children="在售"
+            un-checked-children="未上架"
+            :checked="text == 1"
+            @click="changeStatus(record)"
+          ></a-switch>
+        </template>
+        <template slot="tag" slot-scope="text,record">
+          <a-tag v-if="record.isNew == 1" color="green">新品</a-tag>
+          <a-tag v-if="record.hot == 1" color="red">热卖</a-tag>
+        </template>
+        <template slot="reservePrice" slot-scope="text,record">￥{{text}}</template>
+        <template slot="sales" slot-scope="text,record">{{text}}{{record.unit}}</template>
+        <template slot="stock" slot-scope="text,record">{{text}}{{record.unit}}</template>
+        <span slot="action" slot-scope="text, record">
+          <template>
+            <a-dropdown>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a @click="editBasicInfo(record)">基本信息</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a @click="editAttrInfo(record)">属性信息</a>
+                </a-menu-item>
+                <a-menu-item>
+                  <a @click="editSpecInfo(record)">规格信息</a>
+                </a-menu-item>
+              </a-menu>
+              <a>
+                编辑
+                <a-icon type="down" />
+              </a>
+            </a-dropdown>
+            <a-divider type="vertical" />
+            <a @click="clickDelete(record)">删除</a>
+          </template>
+        </span>
+      </a-table>
     </a-spin>
     <a-modal
       title="商品详情"
@@ -114,68 +140,162 @@
       :afterClose="()=>{this.specListColumn=[] ;this.goodsDetail={}}"
       :width="900"
     >
-      <a-spin :spinning="isLoading">
-        <template>
-          <a-descriptions :title="goodsDetailTitle">
-            <a-descriptions-item label="商品简要" span="2">{{goodsDetail.brief}}</a-descriptions-item>
-            <a-descriptions-item label="商品分类" span="2">{{goodsDetail.category}}</a-descriptions-item>
-            <a-descriptions-item label="价格" span="2">{{goodsDetail.price}}元</a-descriptions-item>
-            <a-descriptions-item label="折扣价格" span="2">{{goodsDetail.discountPrice}}</a-descriptions-item>
-            <a-descriptions-item label="轮播图片" span="4">
-              <div style>
-                <a-row :gutter="16">
-                  <a-col :span="8" v-for="(item,key) in goodsDetail.galleryList" :key="key">
-                    <a-card :bordered="false">
-                      <img slot="cover" :src="item" style="width:120px " />
-                    </a-card>
-                  </a-col>
-                </a-row>
-              </div>
-            </a-descriptions-item>
-          </a-descriptions>
-        </template>
-        <a-divider type="horizontal" />
-        <template>
-          <div>
-            <a-tabs default-active-key="1">
-              <a-tab-pane key="1" tab="商品属性">
-                <a-table
-                  size="small"
-                  :dataSource="goodsDetail.attrValueList"
-                  :pagination="false"
-                  :columns="attrColumns"
-                ></a-table>
-              </a-tab-pane>
-              <a-tab-pane key="2" tab="商品规格" force-render>
-                <a-table
-                  size="small"
-                  bordered
-                  :dataSource="goodsDetail.goodsSpecList"
-                  :pagination="false"
-                  :columns="specListColumn"
-                >
-                  <template slot="img" slot-scope="text,record">
-                    <img :src="text" style="width:60px;height:60px" />
-                  </template>
-                </a-table>
-              </a-tab-pane>
-            </a-tabs>
-          </div>
-        </template>
-      </a-spin>
+      <div>
+        <a-spin :spinning="isLoading">
+          <template>
+            <a-descriptions :title="goodsDetailTitle">
+              <a-descriptions-item label="商品简要" span="2">{{goodsDetail.brief}}</a-descriptions-item>
+              <a-descriptions-item label="商品标题" span="2">{{goodsDetail.title}}</a-descriptions-item>
+              <a-descriptions-item label="商品分类" span="2">{{goodsDetail.category}}</a-descriptions-item>
+              <a-descriptions-item label="商品重量" span="2">￥{{goodsDetail.weight}}kg</a-descriptions-item>
+              <a-descriptions-item label="起步价格" span="2">￥{{goodsDetail.price}}元起</a-descriptions-item>
+              <a-descriptions-item label="折扣价格" span="2">￥{{goodsDetail.discountPrice}}元</a-descriptions-item>
+              <a-descriptions-item label="轮播图片" span="4">
+                <div>
+                  <a-row :gutter="16">
+                    <a-col :span="8" v-for="(item,key) in goodsDetail.galleryList" :key="key">
+                      <a-card :bordered="false">
+                        <img slot="cover" :src="item" style="width:120px " />
+                      </a-card>
+                    </a-col>
+                  </a-row>
+                </div>
+              </a-descriptions-item>
+            </a-descriptions>
+          </template>
+          <a-divider type="horizontal" />
+          <template>
+            <div>
+              <a-tabs default-active-key="1">
+                <a-tab-pane key="1" tab="商品属性">
+                  <a-table
+                    size="small"
+                    :dataSource="goodsDetail.attrValueList"
+                    :pagination="false"
+                    :columns="attrColumns"
+                  ></a-table>
+                </a-tab-pane>
+                <a-tab-pane key="2" tab="商品规格" force-render>
+                  <a-table
+                    size="small"
+                    bordered
+                    :dataSource="goodsDetail.goodsSpecList"
+                    :pagination="false"
+                    :columns="specListColumn"
+                  >
+                    <template slot="img" slot-scope="text,record">
+                      <img :src="text" style="width:60px;height:60px" />
+                    </template>
+                  </a-table>
+                </a-tab-pane>
+              </a-tabs>
+            </div>
+          </template>
+          <a-card style="margin-top : 20px" :bordered="false">
+            <a-button
+              type="primary"
+              slot="extra"
+              @click="()=>this.openEditor=true"
+              v-if="!openEditor"
+            >编辑详情页</a-button>
+            <a-button type="primary" slot="extra" @click="editDetail" v-if="openEditor">确定</a-button>
+            <a-button
+              type="danger"
+              slot="extra"
+              @click="()=>{this.openEditor=false;this.detail = this.oldDetail}"
+              v-if="openEditor"
+              style="margin-left:8px"
+            >取消</a-button>
+            <template v-if="!openEditor">
+              <div v-html="goodsDetail.detail"></div>
+            </template>
+            <template v-else>
+              <WangEditor ref="editor" v-model="detail"></WangEditor>
+            </template>
+          </a-card>
+        </a-spin>
+      </div>
     </a-modal>
+
+    <a-drawer
+      :title="drawerTitle"
+      :width="720"
+      :visible="drawerVisible"
+      :body-style="{ paddingBottom: '80px' }"
+      @close="onClose"
+    >
+      <div v-if="editBasic">
+        <EditGoodsBasic :goodsInfo="goodsBasicInfo" @close="(flag)=>editFormClose(flag)"></EditGoodsBasic>
+      </div>
+      <div v-else-if="editAttr">
+        <a-table
+          :columns="editAttrColumns"
+          :pagination="false"
+          :data-source="attrList"
+          size="small"
+        >
+          <template slot="value" scope="text,record">
+            <a-input
+              v-if="record.editable"
+              style="width:120px"
+              v-model="record.value"
+              @blur="closeInput(record)"
+            />
+            <template v-else>{{ text }}</template>
+          </template>
+
+          <template slot="action" scope="text,record">
+            <a-button type="link" size="small" shape="round" @click="attrEditable(record)">编辑</a-button>
+          </template>
+        </a-table>
+        <div style="text-align:center; margin-top:20px">
+          <a-button type="primary" @click="submitEditAttr">提交</a-button>
+          <a-button style="margin-left: 8px" @click="()=>this.onClose()">取消</a-button>
+        </div>
+      </div>
+      <div v-else>
+        <a-table :pagination="false" :data-source="specList" size="small">
+          <a-table-column-group>
+            <a-table-column data-index="name" title="规格名" align="center">
+              <template slot-scope="text,record">
+                <a-input style="width:120px" v-model="record.name" />
+              </template>
+            </a-table-column>
+            <a-table-column data-index="sort" title="排序号" align="center">
+              <template slot-scope="text,record">
+                <a-input-number style="width:120px" v-model="record.sort" />
+              </template>
+            </a-table-column>
+          </a-table-column-group>
+        </a-table>
+        <div style="text-align:center; margin-top:20px">
+          <a-button type="primary" @click="submitEditSpec">提交</a-button>
+          <a-button style="margin-left: 8px" @click="()=>this.onClose()">取消</a-button>
+        </div>
+      </div>
+    </a-drawer>
   </div>
 </template>
 
 
 <script>
 import { getTree } from '@/api/category'
-import { getSpuList, getSpuDetail } from '@/api/goods'
+import {
+  getSpuList,
+  getSpuDetail,
+  changeStatus,
+  editDetail,
+  editAttr,
+  getSpecs,
+  editSpec,
+  deleteGoods,
+} from '@/api/goods'
 import WangEditor from '../../components/Editor/WangEditor'
+import EditGoodsBasic from '../product/EditGoodsBasic'
 import { notification } from 'ant-design-vue'
 export default {
   name: 'goods',
-  components: { WangEditor },
+  components: { WangEditor, EditGoodsBasic },
   data() {
     return {
       advanced: false,
@@ -184,13 +304,18 @@ export default {
       category: [],
       options: [],
       spuList: [],
+      attrList: [],
+      specList: [],
       visible: false,
       goodsDetail: {},
       goodsDetailTitle: '',
       column: 2,
       specListColumn: [],
       isLoading: false,
-      loading : false,
+      loading: false,
+      openEditor: false,
+      detail: {},
+      oldDetail: {},
       scroll: {
         x: 1200,
         y: 600,
@@ -200,11 +325,17 @@ export default {
         value: 'id',
         children: 'children',
       },
+      drawerVisible: false,
+      editBasic: false,
+      editAttr: false,
+      editSpec: false,
+      goodsBasicInfo: {},
+      goodsForm: {},
       columns: [
         {
           title: '序号',
           align: 'center',
-          width: '5%',
+          width: '3%',
           customRender: (value, row, index) => {
             return `${(this.pagination.defaultCurrent - 1) * this.pagination.defaultPageSize + index + 1}`
           },
@@ -248,22 +379,26 @@ export default {
           title: '最低价格',
           align: 'center',
           dataIndex: 'reservePrice',
+          scopeSlots: { customRender: 'reservePrice' },
         },
         {
           title: '销量',
           align: 'center',
           dataIndex: 'sales',
+          scopedSlots: { customRender: 'sales' },
         },
         {
           title: '库存',
           align: 'center',
           dataIndex: 'stock',
+          scopedSlots: { customRender: 'stock' },
         },
         {
           title: '操作',
           dataIndex: 'action',
           align: 'center',
-        //   fixed: 'right',
+          width: '15%',
+          //   fixed: 'right',
           scopedSlots: { customRender: 'action' },
         },
       ],
@@ -279,7 +414,45 @@ export default {
           align: 'center',
         },
       ],
-
+      editAttrColumns: [
+        {
+          title: '属性名',
+          dataIndex: 'attr',
+          align: 'center',
+        },
+        {
+          title: '属性值',
+          dataIndex: 'value',
+          align: 'center',
+          scopedSlots: { customRender: 'value' },
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: 'center',
+          scopedSlots: { customRender: 'action' },
+        },
+      ],
+      editSpecColumns: [
+        {
+          title: '规格名',
+          dataIndex: 'name',
+          align: 'center',
+          scopedSlots: { customRender: 'spec.name' },
+        },
+        {
+          title: '排序号',
+          dataIndex: 'sort',
+          align: 'center',
+          scopedSlots: { customRender: 'spec.sort' },
+        },
+        // {
+        //   title: '操作',
+        //   dataIndex: 'op',
+        //   align: 'center',
+        //   scopedSlots: { customRender: 'op' },
+        // },
+      ],
       pagination: {
         defaultCurrent: 1,
         defaultPageSize: 10,
@@ -316,6 +489,17 @@ export default {
       }
     },
   },
+  computed: {
+    drawerTitle: function () {
+      if (this.editBasic) {
+        return '编辑商品基本信息'
+      } else if (this.editAttr) {
+        return '编辑商品属性信息'
+      } else {
+        return '编辑商品规格信息'
+      }
+    },
+  },
   methods: {
     reset() {
       ;(this.queryParam = {}), (this.category = [])
@@ -346,8 +530,7 @@ export default {
             description: res.msg,
           })
         }
-         this.loading = false
-
+        this.loading = false
       })
     },
     getCateTree() {
@@ -371,9 +554,11 @@ export default {
       getSpuDetail(id).then((res) => {
         if (res.success) {
           this.goodsDetail = res.data.detail
+          this.detail = this.goodsDetail.detail
+          this.oldDetail = this.goodsDetail.detail
           this.goodsDetailTitle = `商品编号: ${this.goodsDetail.goodsSn}`
           if (this.goodsDetail.goodsSpecList !== null) {
-             this.getTitle(this.goodsDetail.goodsSpecList[0].specAndValueList)
+            this.getTitle(this.goodsDetail.goodsSpecList[0].specAndValueList)
           }
         } else {
           notification.error({
@@ -381,8 +566,196 @@ export default {
             description: res.msg,
           })
         }
-       this.isLoading = false
+        this.isLoading = false
       })
+    },
+    openEd() {
+      this.openEditor = true
+    },
+    clickDelete(record) {
+      const that = this
+      this.$confirm({
+        title: '确认删除',
+        content: '删除该商品后将无法恢复,是否删除?',
+        onOk() {
+          deleteGoods(record.id).then((res) => {
+            if (res.success) {
+              notification.success({
+                message: '成功',
+                description: '删除商品成功',
+              })
+              that.queryGoodsSpu({})
+            } else {
+              notification.error({
+                message: '失败',
+                description: res.msg,
+              })
+            }
+          })
+        },
+      })
+    },
+    editDetail() {
+      editDetail({ id: this.goodsDetail.id, detail: this.detail }).then((res) => {
+        if (res.success) {
+          notification.success({
+            message: '成功',
+            description: '商品详情页修改成功',
+          })
+          this.openEditor = false
+          this.goodsDetail.detail = this.detail
+          this.oldDetail = this.detail
+        } else {
+          notification.error({
+            message: '失败',
+            description: '商品详情页修改失败',
+          })
+        }
+      })
+    },
+
+    attrEditable(record) {
+      const newAttr = [...this.attrList]
+      newAttr.forEach((item) => {
+        if (item.attrId == record.attrId) {
+          item.editable = true
+        }
+      })
+      this.attrList = newAttr
+    },
+
+    submitEditAttr() {
+      this.goodsForm.attrValues = this.attrList
+      editAttr(this.goodsForm).then((res) => {
+        if (res.success) {
+          notification.success({
+            message: '成功',
+            description: '修改商品属性成功',
+          })
+          ;(this.goodsForm = {}), this.onClose()
+        } else {
+          notification.error({
+            message: '失败',
+            description: res.msg,
+          })
+        }
+      })
+    },
+    submitEditSpec() {
+      const arr = this.specList.filter((item) => item.sort === null || item.name == '')
+      if (arr.length > 0) {
+        notification.error({
+          message: '错误',
+          description: '还有未输入项',
+        })
+        return
+      }
+
+      this.goodsForm.specs = this.specList
+      editSpec(this.goodsForm).then((res) => {
+        if (res.success) {
+          notification.success({
+            message: '成功',
+            description: '修改商品规格成功',
+          })
+          this.onClose()
+        } else {
+          notification.error({
+            message: '错误',
+            description: res.msg,
+          })
+        }
+      })
+    },
+    closeInput(record) {
+      if (typeof record.id != 'undefined') {
+        const newData = [...this.specList]
+        newData.forEach((item) => (item.editable = false))
+        this.specList = newData
+      } else {
+        const newData = [...this.attrList]
+        newData.forEach((item) => (item.editable = false))
+        this.attrList = newData
+      }
+    },
+    editAttrInfo(record) {
+      this.editAttr = true
+      this.editSpec = false
+      this.editBasic = false
+      this.drawerVisible = true
+      getSpuDetail(record.id).then((res) => {
+        if (res.success) {
+          this.goodsForm.id = record.id
+          this.attrList = res.data.detail.attrValueList
+          this.attrList.forEach((attr) => {
+            attr.editable = false
+          })
+        } else {
+          notification.error({
+            message: '失败',
+            description: res.msg,
+          })
+        }
+      })
+    },
+    editSpecInfo(record) {
+      this.editAttr = false
+      this.editSpec = true
+      this.editBasic = false
+      this.drawerVisible = true
+      getSpecs(record.id).then((res) => {
+        if (res.success) {
+          this.goodsForm.id = record.id
+          this.specList = res.data.list
+          if (this.specList === null) {
+            return
+          }
+          this.specList.forEach((spec) => {
+            spec.editable = false
+          })
+        } else {
+          notification.error({
+            message: '失败',
+            description: res.msg,
+          })
+        }
+      })
+    },
+    changeStatus(goods) {
+      changeStatus({
+        id: goods.id,
+        status: 1 - goods.status,
+      }).then((res) => {
+        if (res.success) {
+          if (goods.status == 0) {
+            this.$message.success('商品已上架')
+          } else {
+            this.$message.success('商品已下架')
+          }
+          goods.status = 1 - goods.status
+        } else {
+          notification.error({
+            message: '失败',
+            description: res.msg,
+          })
+        }
+      })
+    },
+    editBasicInfo(record) {
+      this.editBasic = true
+      this.editAttr = false
+      this.editSpec = false
+      this.drawerVisible = true
+      this.goodsBasicInfo = record
+    },
+    editFormClose(flag) {
+      if (flag) {
+        this.queryGoodsSpu(this.queryParam)
+      }
+      this.onClose()
+    },
+    onClose() {
+      ;(this.drawerVisible = false), (this.editBasic = false), (this.editAttr = false), (this.editSpec = false)
     },
     getTitle(specList) {
       let index = 0
