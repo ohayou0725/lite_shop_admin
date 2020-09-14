@@ -99,7 +99,7 @@ export const asyncRouterMap = [
           {
             path: '/product/add_product',
             name: 'addProduct',
-            component: () => import('@/views/product/AddProduct'),
+            component: () => import('@/views/product/AddSku'),
             meta: {title: '商品上架',keepAlive: true, icon:'file-add',permission:['超级管理员','商品管理员']}
           },
           {

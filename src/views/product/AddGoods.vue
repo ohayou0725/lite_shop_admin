@@ -267,9 +267,39 @@
         <a-divider type="vertical" />
         <a-card size="small" title="商品规格" :bordered="false">
           <a-button slot="extra" type="primary" @click="addSpec">添加规格</a-button>
-          <a-table :columns="specColumns" :data-source="specs" bordered>
-            <template v-for="col in ['name', 'sort']" :slot="col" slot-scope="text, record, index">
-              <div :key="col">
+          <a-table :columns="specColumns" :data-source="specs" bordered :defaultExpandAllRows='true'>
+            <div slot="expandedRowRender" slot-scope="record" style="margin: 0">
+              <a-tag
+                :closable="record.values.length > 1"
+                @close="closeTag(value,record)"
+                v-for="(value ,index ) in record.values"
+                color="blue"
+                :key="index"
+              >{{value}}</a-tag>
+              <a-input
+                v-if="record.inputVisible"
+                ref="input"
+                type="text"
+                size="small"
+                v-model="record.value"
+                :style="{ width: '78px' }"
+                @blur="addValue(record)"
+                @keyup.enter="addValue(record)"
+              />
+              <a-tag
+                v-else
+                style="background: #fff; borderStyle: dashed;"
+                @click="showInput(record)"
+              >
+                <a-icon type="plus" />
+                添加{{record.name}}
+              </a-tag>
+            </div>
+            <template slot='action' slot-scope="text,record">
+              <a-button icon='delete' type='danger' size='small' @click="deleteSpec(record)">删除</a-button>
+            </template>
+            <!-- <template v-for="col in ['name', 'sort']" :slot="col" slot-scope="text, record, index">
+              <div :key="col"></div>
                 <a-input
                   v-if="record.editable"
                   style="margin: -5px 0"
@@ -292,8 +322,34 @@
                   <a :disabled="editingKey !== ''" @click="() => deleteSpec(record.key)">删除</a>
                 </span>
               </div>
-            </template>
+            </template>-->
           </a-table>
+          <a-modal
+            title="添加规格"
+            :visible="specVisible"
+            :destroyOnClose="true"
+            @ok="subitAddSpec"
+            @cancel="()=>this.specVisible=false"
+          >
+            <a-form>
+              <a-form-item
+                label="规格名称"
+                :required="true"
+                :labelCol="{lg: {span: 4}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+              >
+                <a-input v-model="specForm.name"></a-input>
+              </a-form-item>
+              <a-form-item
+                label="排序号"
+                :required="true"
+                :labelCol="{lg: {span: 4}, sm: {span: 7}}"
+                :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
+              >
+                <a-input-number v-model="specForm.sort" :min="0" :defaultValue='0' ></a-input-number>
+              </a-form-item>
+            </a-form>
+          </a-modal>
         </a-card>
       </div>
     </div>
@@ -380,10 +436,12 @@ export default {
       goodsDetail: {},
       attrs: [],
       specs: [],
-      specForm: [],
+      specForm: {},
       attrAndValue: {},
       loading: false,
       editingKey: '',
+      specVisible: false,
+      inputVisible: true,
       specColumns: [
         {
           title: '规格名',
@@ -412,7 +470,7 @@ export default {
 
   watch: {
     current(value) {
-      if (value === 2) {
+      if (value === 2 && this.attrs.length === 0) {
         getDetail(this.goodsDetail.categoryId[2]).then((res) => {
           if (res.success) {
             const attrs = res.data.detail.attrs
@@ -468,18 +526,29 @@ export default {
         return
       }
       const emptySpec = this.specs.filter((item) => {
-        item.spec === '' || item.sort == ''
+        item.name === '' || item.sort == '' || item.values.length === 0
       })
       if (emptySpec.length > 0 || this.specs.length === 0) {
         notification.error({
           message: '错误',
-          description: '请输入完整的商品规格',
+          description: '请输入完整的商品规格和规格值',
         })
         return
       }
-      this.goodsDetail.attrValues = this.attrs
-      this.goodsDetail.specs = this.specs
 
+      this.goodsDetail.attrValues = this.attrs
+      this.goodsDetail.specs = []
+      
+      this.specs.forEach((spec) => {  
+        let values = []
+        spec.values.forEach(value=>{
+            values.push({specValue:value})
+        })      
+        this.goodsDetail.specs.push({
+          spec: { name: spec.name, sort: spec.sort },
+          values: values,
+        })
+      })
       let goodsForm = {}
       goodsForm.goodsSn = this.goodsDetail.goodsSn
       goodsForm.name = this.goodsDetail.name
@@ -513,8 +582,8 @@ export default {
             message: '成功',
             description: '商品添加成功',
           })
-        window.localStorage.removeItem(goodsForm.goodsSn)
-        this.$emit('toGoodsList',true)
+          window.localStorage.removeItem(goodsForm.goodsSn)
+          this.$emit('toGoodsList', true)
         } else {
           notification.error({
             message: '错误',
@@ -609,16 +678,80 @@ export default {
         this.specs = newData
       }
     },
-    deleteSpec(key) {
-      this.specs.splice(key, 1)
+    deleteSpec(record) {
+      const old = this.specs
+      const name = record.name.trim()
+      for (let i = 0; i < old.length; i++) {
+          if (old[i].name === name) {
+            old.splice(i,1);
+            break
+          }        
+      }
+      this.specs = old
+    },
+    closeTag(value, record) {
+      let arr = record.values
+      const newValues = arr.filter((item) => value !== item)
+      record.values = newValues
+    },
+    addValue(record) {
+      const inputValue = record.value
+      let values = record.values
+      if (inputValue && values.indexOf(inputValue) === -1) {
+        values = [...values, inputValue]
+      }
+      record.values = values
+      ;(record.inputVisible = false), (record.value = '')
+      // Object.assign(this, {
+      //   values,
+      //   inputVisible: false,
+      //   value: '',
+      // });
+    },
+    showInput(record) {
+      record.inputVisible = true
+      let oldData = [...this.specs]
+      for (let i = 0; i < oldData.length; i++) {
+        if (oldData[i].name == record.name) {
+          oldData[i] = record
+        }
+      }
+      this.specs = oldData
+      this.$nextTick(function () {
+        this.$refs.input.focus()
+      })
     },
     addSpec() {
-      let length = this.specs.length
-      if (length === 0) {
-        this.specs.push({ key: '0', name: '', sort: '', editable: true })
-      } else {
-        this.specs.push({ key: length.toString(), name: '', sort: '', editable: true })
+      this.specVisible = true
+      // let length = this.specs.length
+      // if (length === 0) {
+      //   this.specs.push({ key: '0', name: '', sort: '', editable: true })
+      // } else {
+      //   this.specs.push({ key: length.toString(), name: '', sort: '', editable: true })
+      // }
+    },
+    subitAddSpec() {
+      if (
+        this.specForm.name == null ||
+        this.specForm.name == '' ||
+        this.specForm.sort == ''
+      ) {
+        this.$message.error('请输入完整表单')
+        return
       }
+      const count = this.specs.filter((spec) => spec.name === this.specForm.name).length
+      if (count > 0) {
+        this.$message.error('不能重复添加规格')
+        return
+      }
+      this.specForm.values = []
+      this.specForm.inputVisible = false
+      this.specs.push(this.specForm)
+      this.specForm = {}
+      this.specVisible = false
+    },
+    modalCancel() {
+      this.specVisible = false
     },
     openAdd(item) {
       this.selectedAttr = item.attrId

@@ -170,6 +170,7 @@
           <a-input-number
             v-decorator="[
               'weight',
+              {initialValue : this.goodsInfo.weight},
               {rules: [{ required: true, message: '请输入商品重量' }]}
             ]"
             :precision="2"

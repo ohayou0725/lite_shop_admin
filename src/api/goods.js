@@ -13,7 +13,13 @@ const api = {
    editAttr : '/product/goods/update/attr',
    getSpecs : '/product/goods/specs',
    editSepc : '/product/goods/update/spec',
-   deleteGoods : '/product/goods/delete'
+   deleteGoods : '/product/goods/delete',
+   skuList : '/product/goods/sku',
+   getSpecsByGoodsSn :'/product/goods/getSpec',
+   addGoodsSku : '/product/goods/sku/add',
+   editSku :'/product/goods/sku/update',
+   deleteSku : '/product/goods/sku/offShelf',
+   deleteAllSku : '/product/goods/sku/allOffShelf'
 }
 
 export function getSpuList(params) {
@@ -103,6 +109,52 @@ export function deleteGoods(params) {
     return request({
         url : api.deleteGoods + `/${params}`,
         method : "post",
+    })
+}
+
+export function skuList(params) {
+    return request({
+        url : api.skuList,
+        method : "get",
+        params : params
+    })
+}
+
+export function getSpecsByGoodsSn(params) {
+    return request({
+        url : api.getSpecsByGoodsSn,
+        method : 'get',
+        params :params
+    })
+}
+
+export function addSku(data) {
+    return request({
+        url : api.addGoodsSku,
+        method : 'post',
+        data :data
+    })
+}
+
+export function editSku(data) {
+    return request({
+        url : api.editSku,
+        method : 'post',
+        data :data
+    })
+}
+
+export function deleteSku(id) {
+    return request({
+        url : api.deleteSku + `/${id}`,
+        method : 'post'
+    })
+}
+
+export function deleteAllSku(id) {
+    return request({
+        url : api.deleteAllSku + `/${id}`,
+        method : 'post'
     })
 }
 

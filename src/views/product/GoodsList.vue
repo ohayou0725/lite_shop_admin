@@ -93,12 +93,14 @@
           <img :src="text" width="40px" />
         </template>
         <template slot="status" slot-scope="text,record">
-          <a-switch
+          <!-- <a-switch
             checked-children="在售"
             un-checked-children="未上架"
             :checked="text == 1"
             @click="changeStatus(record)"
-          ></a-switch>
+          ></a-switch>-->
+          <a-tag v-if="text==1" color="#2db7f5">在售</a-tag>
+          <a-tag v-if="text==0" color="#f50">未上架</a-tag>
         </template>
         <template slot="tag" slot-scope="text,record">
           <a-tag v-if="record.isNew == 1" color="green">新品</a-tag>
@@ -151,17 +153,18 @@
               <a-descriptions-item label="起步价格" span="2">￥{{goodsDetail.price}}元起</a-descriptions-item>
               <a-descriptions-item label="折扣价格" span="2">￥{{goodsDetail.discountPrice}}元</a-descriptions-item>
               <a-descriptions-item label="轮播图片" span="4">
-                <div>
-                  <a-row :gutter="16">
-                    <a-col :span="8" v-for="(item,key) in goodsDetail.galleryList" :key="key">
+              </a-descriptions-item>
+            </a-descriptions>
+            <a-list
+                    :grid="{ gutter: 32, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 3 }"
+                    :data-source="goodsDetail.galleryList"
+                  >
+                    <a-list-item slot="renderItem" slot-scope="item, index">
                       <a-card :bordered="false">
                         <img slot="cover" :src="item" style="width:120px " />
                       </a-card>
-                    </a-col>
-                  </a-row>
-                </div>
-              </a-descriptions-item>
-            </a-descriptions>
+                    </a-list-item>
+                  </a-list>
           </template>
           <a-divider type="horizontal" />
           <template>
@@ -256,17 +259,103 @@
       <div v-else>
         <a-table :pagination="false" :data-source="specList" size="small">
           <a-table-column-group>
-            <a-table-column data-index="name" title="规格名" align="center">
+            <a-table-column data-index="spec" title="规格名" align="center" key="1">
               <template slot-scope="text,record">
-                <a-input style="width:120px" v-model="record.name" />
+                <a-input style="width:120px" v-model="text.name" />
               </template>
             </a-table-column>
-            <a-table-column data-index="sort" title="排序号" align="center">
+            <a-table-column data-index="spec" title="排序号" align="center" key="2">
               <template slot-scope="text,record">
-                <a-input-number style="width:120px" v-model="record.sort" />
+                <a-input-number style="width:120px" v-model="text.sort" />
               </template>
             </a-table-column>
           </a-table-column-group>
+          <div slot="expandedRowRender" slot-scope="record">
+            <!-- <template v-if="!record.isEdit">
+              <a-tag
+                v-for="(item,index) in record.values"
+                :key="index"
+                color="blue"
+                :closable="record.values.length > 1"
+              @close="removeTag(record,item.specValue)"
+              >{{item.specValue}}</a-tag>
+            </template>-->
+            <template v-if="!record.isEdit">
+              <a-radio-group
+                button-style="solid"
+                style="margin-right:20px"
+                v-model="record.selectValue"
+                @change="(e)=>select(e,record)"
+              >
+                <a-radio-button
+                  v-for="(item,index) in record.values"
+                  :key="index"
+                  :value="item.specValue"
+                >{{item.specValue}}</a-radio-button>
+              </a-radio-group>
+            </template>
+
+            <template v-else>
+              <a-input
+                v-for="(item,index) in record.values"
+                :key="index"
+                v-model="item.specValue"
+                :disabled="item.disabled"
+                style="width: 70px;height:24px;margin-right:5px"
+              />
+            </template>
+            <template></template>
+            <a-input
+              v-if="record.isAdd"
+              v-model="specValueInput"
+              style="width: 70px;height:24px;margin-right:20px"
+              @blur="addSpecValue(record)"
+            />
+            <template v-if="!record.isEdit">
+              <a-button
+                icon="edit"
+                size="small"
+                type="primary"
+                style="margin-left='20px"
+                @click="openSpecEdit(record)"
+                :disabled="record.selectValue == '' "
+              >编辑</a-button>
+              <a-button
+                icon="plus"
+                size="small"
+                style="margin-left='20px"
+                @click="openSpecValue(record)"
+              >添加</a-button>
+              <a-popconfirm
+                title="是否删除该规格值"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="(e)=>confimDelete(e,record)"
+              >
+                <a-button
+                  type="danger"
+                  icon="delete"
+                  size="small"
+                  style="margin-left='20px"
+                  :disabled="record.selectValue == '' || record.values.length < 2"
+                >删除</a-button>
+              </a-popconfirm>
+            </template>
+            <template v-else>
+              <a-button
+                type="link"
+                size="small"
+                style="margin-left=20px"
+                @click="submitEditSpecValue(record)"
+              >确定</a-button>
+              <a-button
+                type="link"
+                size="small"
+                style="margin-left=20px"
+                @click="cancelEditSpecValue(record)"
+              >取消</a-button>
+            </template>
+          </div>
         </a-table>
         <div style="text-align:center; margin-top:20px">
           <a-button type="primary" @click="submitEditSpec">提交</a-button>
@@ -293,6 +382,7 @@ import {
 import WangEditor from '../../components/Editor/WangEditor'
 import EditGoodsBasic from '../product/EditGoodsBasic'
 import { notification } from 'ant-design-vue'
+import { length } from 'store/storages/all'
 export default {
   name: 'goods',
   components: { WangEditor, EditGoodsBasic },
@@ -306,6 +396,7 @@ export default {
       spuList: [],
       attrList: [],
       specList: [],
+      cacheSpecList: null,
       visible: false,
       goodsDetail: {},
       goodsDetailTitle: '',
@@ -316,9 +407,9 @@ export default {
       openEditor: false,
       detail: {},
       oldDetail: {},
+      specValueInput: '',
       scroll: {
         x: 1200,
-        y: 600,
       },
       categoryField: {
         label: 'name',
@@ -453,6 +544,10 @@ export default {
         //   scopedSlots: { customRender: 'op' },
         // },
       ],
+      valueColumns: [
+        { title: '属性值', dataIndex: 'specValue' },
+        { title: '操作', dataIndex: 'operation', scopedSlots: { customRender: 'operation' } },
+      ],
       pagination: {
         defaultCurrent: 1,
         defaultPageSize: 10,
@@ -508,7 +603,7 @@ export default {
       if (value.length === 0) {
         return
       }
-      this.queryParam.categoryId = value[value.length - 1]
+      this.queryParam.categoryIds = value[value.length - 1]
     },
     isNewOrHot(value) {
       this.queryParam.hot = null
@@ -650,7 +745,6 @@ export default {
         })
         return
       }
-
       this.goodsForm.specs = this.specList
       editSpec(this.goodsForm).then((res) => {
         if (res.success) {
@@ -660,6 +754,8 @@ export default {
           })
           this.onClose()
         } else {
+          this.specList = JSON.parse(this.cacheSpecList)
+          this.$forceUpdate()
           notification.error({
             message: '错误',
             description: res.msg,
@@ -712,7 +808,11 @@ export default {
           }
           this.specList.forEach((spec) => {
             spec.editable = false
+            spec.isAdd = false
+            spec.isEdit = false
+            spec.selectValue = ''
           })
+          this.cacheSpecList = JSON.stringify(this.specList)
         } else {
           notification.error({
             message: '失败',
@@ -720,6 +820,135 @@ export default {
           })
         }
       })
+    },
+    openSpecValue(record) {
+      let oldData = this.specList
+      let spec = oldData.filter((item) => {
+        return item.spec.id === record.spec.id
+      })[0]
+      spec.isAdd = true
+      this.specList = oldData
+      this.$forceUpdate()
+    },
+    addSpecValue(record) {
+      let spec = this.specList.filter((item) => {
+        return item.spec.id === record.spec.id
+      })[0]
+      const exist =
+        spec.values.filter((item) => {
+          return item.specValue === this.specValueInput.trim()
+        }).length > 0
+      if (this.specValueInput === '' || exist) {
+        spec.isAdd = false
+        this.$forceUpdate()
+        return
+      } else {
+        spec.values.push({ specId: spec.spec.id, specValue: this.specValueInput })
+        spec.isAdd = false
+        this.specValueInput = ''
+      }
+    },
+    openSpecEdit(record) {
+      this.cacheSpecList = JSON.stringify(this.specList)
+      let oldData = this.specList
+      let spec = oldData.filter((item) => {
+        return item.spec.id === record.spec.id
+      })[0]
+      spec.isEdit = true
+      spec.values.forEach((item) => {
+        if (item.specValue === record.selectValue) {
+          item.disabled = false
+        } else {
+          item.disabled = true
+        }
+      })
+      this.specList = oldData
+      this.$forceUpdate()
+    },
+    submitEditSpecValue(record) {
+      let oldData = this.specList
+      let spec = oldData.filter((item) => {
+        return item.spec.id === record.spec.id
+      })[0]
+      let empty = spec.values.filter((item) => {
+        return item.specValue == ''
+      })
+      let arr = []
+      spec.values.forEach((item) => {
+        arr.push(item.specValue)
+      })
+      if (empty.length > 0 || this.isRepeat(arr)) {
+        return
+      } else {
+        spec.selectValue = ''
+        spec.isEdit = false
+        this.specList = oldData
+        this.$forceUpdate()
+      }
+
+      // let obj = {}
+      // let arr = spec.values.reduce(function (item, next) {
+      //   obj[next.specValue] ? '' : (obj[next.specValue] = true && item.push(next))
+      //   return item
+      // }, [])
+      // spec.values = arr
+    },
+    cancelEditSpecValue(record) {
+      let spec = this.specList.filter((item) => {
+        return item.spec.id === record.spec.id
+      })[0]
+      spec.isEdit = false
+      this.specList = JSON.parse(this.cacheSpecList)
+      this.$forceUpdate()
+    },
+    select(e, record) {
+      const value = e.target.value
+      let spec = this.specList.filter((item) => {
+        return item.spec.id === record.spec.id
+      })[0]
+      spec.selectValue = value
+      this.$forceUpdate()
+    },
+    deleteValue(record) {
+      if (record.values.length < 2) {
+        return
+      }
+      let newData = []
+      record.values.forEach((item) => {
+        if (record.selectValue !== item.specValue) {
+          newData.push(item)
+        }
+      })
+      record.values = newData
+      record.selectValue = ''
+      this.$forceUpdate()
+    },
+    confimDelete(e, record) {
+      if (record.values.length < 2) {
+        return
+      }
+      let newData = []
+      record.values.forEach((item) => {
+        if (record.selectValue !== item.specValue) {
+          newData.push(item)
+        }
+      })
+      record.values = newData
+      record.selectValue = ''
+      this.$forceUpdate()
+    },
+    removeTag(spec, value) {
+      let newSpec = spec.values.filter((item) => {
+        return item.specValue !== value
+      })
+      let newData = this.specList
+      newData.forEach((item) => {
+        if (item.spec.id == spec.spec.id) {
+          item.values = newSpec
+        }
+      })
+      this.specList = newData
+      this.$forceUpdate()
     },
     changeStatus(goods) {
       changeStatus({
@@ -782,6 +1011,12 @@ export default {
         align: 'center',
       })
       this.specListColumn.push({
+        title: '销量',
+        key: '销量',
+        dataIndex: 'sales',
+        align: 'center',
+      })
+      this.specListColumn.push({
         title: '库存',
         key: '库存',
         dataIndex: 'stock',
@@ -794,9 +1029,23 @@ export default {
         align: 'center',
       })
     },
+    getImg(i) {
+      return this.goodsDetail.galleryList[i]
+    },
+    isRepeat(arr) {
+      var hash = {}
+      for (var i in arr) {
+        if (hash[arr[i]]) {
+          return true
+        }
+        hash[arr[i]] = true
+      }
+      return false
+    },
   },
 }
 </script>
 
 <style scoped>
+
 </style>
