@@ -86,6 +86,7 @@
             align : "center",
 
           }
+          
         ],
 
         list: [],
