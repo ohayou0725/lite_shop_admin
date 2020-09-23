@@ -35,7 +35,7 @@
                 class="table-page-search-submitButtons"
                 :style="{ float: 'right', overflow: 'hidden' }"
               >
-                <a-button type="primary" @click="queryData">查询</a-button>
+                <a-button type="primary" @click="queryList">查询</a-button>
                 <a-button style="margin-left: 8px" @click="() => this.queryParam = {}">重置</a-button>
               </span>
             </a-col>
@@ -207,6 +207,9 @@ export default {
     this.queryData(this.queryParam)
   },
   methods: {
+    queryList() {
+        this.queryData(this.queryParam)
+    },
     queryData(param) {
       this.loading = true
       commentList(param).then((res) => {

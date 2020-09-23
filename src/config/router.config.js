@@ -127,7 +127,14 @@ export const asyncRouterMap = [
             path: '/order/aftersale',
             name: 'aftersale',
             component: () => import('@/views/order/Aftersale'),
-            meta: {title: '售后管理',keepAlive: true, icon:'reconciliation',permission:['超级管理员','订单管理员']}
+            meta: {title: '售后管理',keepAlive: true, icon:'reconciliation',permission:['超级管理员','订单管理员']},
+          },
+          {
+            path: '/order/detail/:id',
+            name: 'orderDetail',
+            hidden : true,
+            component: () => import('@/views/order/OrderDetail'),
+            meta: {title: '订单详情',keepAlive: true, icon:'reconciliation',permission:['超级管理员','订单管理员']},
           }
         ]
       },
