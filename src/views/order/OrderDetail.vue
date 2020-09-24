@@ -2,7 +2,7 @@
   <page-header-wrapper :title="title">
     <template v-slot:content>
       <a-descriptions size="small">
-        <a-descriptions-item label="用户手机">{{detail.mobile}}</a-descriptions-item>
+        <a-descriptions-item label="用户昵称">{{detail.nickName}}</a-descriptions-item>
         <a-descriptions-item label="用户留言">{{detail.message}}</a-descriptions-item>
         <a-descriptions-item label="支付方式">
           <span v-if="detail.payType">{{detail.payType}}</span>
@@ -36,8 +36,22 @@
       </a-descriptions>
     </template>
     <template v-slot:extra>
-      <a-button type="primary" @click="print()">打印</a-button>
+      <a-button-group style="margin-right: 4px;">
+        <a-button type="primary" @click="()=>visiable=true" :disabled="isShip">发货</a-button>
+        <a-button type="warning" @click="clickQuery" :disabled="detail.shipSn == null">物流跟踪</a-button>
+      </a-button-group>
+      <!-- <a-button type="danger">取消订单</a-button> -->
     </template>
+    <a-modal v-model="trackVisiable">
+        <a-spin :spinning="this.track.length < 1">
+            <a-steps direction="vertical" size="small" :current="track.length-1">
+                <a-step 
+                v-for="(item,index) in track" :key="index"
+                :title="item.AcceptStation"
+                :description="item.AcceptTime" ></a-step>
+            </a-steps>
+        </a-spin>
+    </a-modal>
     <template v-slot:extraContent>
       <a-row class="status-list">
         <a-col :xs="12" :sm="12">
@@ -89,29 +103,54 @@
         </div>
       </div>
     </a-card>
+    <a-modal v-model="visiable" @cancel="()=>visiable=false" title="订单发货" @ok="submitShip">
+      <a-form :form="form" v-bind="formItemLayout">
+        <a-form-item label="收货人">
+          <span class="ant-form-text">{{detail.receiver}}</span>
+        </a-form-item>
+        <a-form-item label="收货地址">
+          <span class="ant-form-text">{{detail.address}}</span>
+        </a-form-item>
+        <a-form-item label="联系方式">
+          <span class="ant-form-text">{{detail.mobile}}</span>
+        </a-form-item>
+        <a-form-item label="物流商" required>
+          <a-select
+            placeholder="请选择"
+            v-decorator="['shipChannel', { rules: [{ required: true, message: '还未选择物流商' }] }]"
+          >
+            <a-select-option v-for="(item,index) in shipChannel" :key="index" :value="item">{{item}}</a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="快递单号" required>
+          <a-input v-decorator="['shipSn', { rules: [{ required: true, message: '必须输入快递单号' }] }]"></a-input>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </page-header-wrapper>
 </template>
 
 <script>
-import { getDetail } from '@/api/order'
+import { getDetail, ship, queryTrack} from '@/api/order'
 import { notification } from 'ant-design-vue'
+
 export default {
   name: 'OrderDetail',
 
   data() {
     return {
       detail: {},
+      visiable: false,
       tabActiveKey: 'detail',
       title: '',
+      track : [],
+      trackVisiable : false,
+      form: this.$form.createForm(this),
+      formItemLayout: {
+        labelCol: { span: 6 },
+        wrapperCol: { span: 14 },
+      },
       columns: [
-        //   {
-        //   title: '序号',
-        //   align: 'center',
-        //   width: '40px',
-        //   customRender: (value, row, index) => {
-        //     return `${(this.pagination.defaultCurrent - 1) * this.pagination.defaultPageSize + index + 1}`
-        //   },
-        // },
         {
           title: '商品图片',
           dataIndex: 'goodsImg',
@@ -147,10 +186,16 @@ export default {
           scopedSlots: { customRender: 'subtotal' },
         },
       ],
+      shipChannel: ['顺丰速运', '圆通快递', '天天快递', '中通快递', '韵达快递'],
     }
   },
   created() {
     this.getData(this.$route.params.id)
+  },
+  computed: {
+      isShip() {
+          return this.detail.status !== "已付款"
+      }
   },
   methods: {
     getData(id) {
@@ -174,9 +219,47 @@ export default {
         }
       })
     },
-    print() {
-        window.print()
-    }
+    clickQuery() {
+        this.trackVisiable = true
+        this.queryTrack()
+    },
+    queryTrack() {
+        queryTrack(this.detail.orderId).then(res=>{
+            if (res.success) {
+                this.track = res.data.data.Traces
+            } else {
+                notification({
+                    message : "失败",
+                    description : res.msg
+                })
+            }
+        })
+    },
+    submitShip() {
+      this.form.validateFields((err, values) => {
+        if (!err) {
+            let data = {}
+            data.orderId = this.detail.orderId
+            data.shipChannel = values.shipChannel
+            data.shipSn = values.shipSn
+            ship(data).then(res=>{
+                if (res.success) {
+                    notification.success({
+                        message : "成功",
+                        description : "发货成功"
+                    })
+                  this.visiable = false
+                  this.getData(data.orderId)
+                } else {
+                    notification.error({
+                        message : "失败",
+                        description : res.msg
+                    })
+                }
+            })
+        }
+      })
+    },
   },
 }
 </script>

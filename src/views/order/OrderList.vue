@@ -18,10 +18,9 @@
               <a-select placeholder="请选择" v-model="queryParam.status" allowClear>
                 <a-select-option value="0">待付款</a-select-option>
                 <a-select-option value="1">已付款</a-select-option>
-                <a-select-option value="2">待发货</a-select-option>
-                <a-select-option value="3">已发货</a-select-option>
-                <a-select-option value="4">已完成</a-select-option>
-                <a-select-option value="5">已关闭</a-select-option>
+                <a-select-option value="2">已发货</a-select-option>
+                <a-select-option value="3">已完成</a-select-option>
+                <a-select-option value="4">已关闭</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -66,11 +65,11 @@
     <template slot="status" slot-scope="text,record">
         <a-tag  v-if="text == orderStatus.UNPAID.status">{{orderStatus.UNPAID.description}}</a-tag>
         <a-tag  v-else-if="text == orderStatus.PAID.status" color="#108ee9">{{orderStatus.PAID.description}}</a-tag>
-        <a-tag  v-else-if="text == orderStatus.UN_SHIPPED.status" color="#87d068">{{orderStatus.UN_SHIPPED.description}}</a-tag>
         <a-tag  v-else-if="text == orderStatus.SHIPPED.status" color="#87d068">{{orderStatus.SHIPPED.description}}</a-tag>
         <a-tag  v-else-if="text == orderStatus.COMPLETED.status" color="#87d068">{{orderStatus.COMPLETED.description}}</a-tag>
-        <a-tag  v-else-if="text == orderStatus.CLOSED.status" color="#f50">{{orderStatus.CLOSED.description}}</a-tag>
+        <a-tag  v-else color="#f50">{{orderStatus.CLOSED.description}}</a-tag>
     </template>
+
     <template slot="payTime" slot-scope="text,record">
         <span v-if="text == null">未支付</span>
         <span v-else>{{text}}</span>
@@ -81,27 +80,19 @@
         <span v-else>未支付</span>
     </template>
     <template slot="action" slot-scope="text,record">
-        <a-button size="small" @click="openDetail(record)">详情</a-button>
+        <a-button size="small" @click="openDetail(record)">查看订单</a-button>
+        <a-divider type="vertical" />
+        <a-button size="small" type="danger" @click="deleteOrder(record)">删除订单</a-button>
     </template>
     </a-table>
-    <!-- <a-modal :visible="detailVisiable" title="订单详情" @cancel="detailVisiable=false">
-
-    </a-modal> -->
+    
   </page-header-wrapper>
 </template>
 
 <script>
 import moment from 'moment'
-import { getList } from '@/api/order'
+import { getList, deleteOrder } from '@/api/order'
 import { notification } from 'ant-design-vue'
-const status = {
-    UNPAID  : {status : 0, description : '待付款'},
-    PAID : {status : 1, description : '已付款'},
-    UN_SHIPPED : {status : 2 , description : "待发货"},
-    SHIPPED : {status : 3 , description : '已发货'},
-    COMPLETED : {status : 4 , description : '已完成'},
-    CLOSED : {status : 5, description : '已关闭'},
-}
 
 export default {
   name: 'OrderList',
@@ -109,10 +100,17 @@ export default {
   data() {
     return {
       queryParam: {},
+      visiable : false,
       loading: false,
       orderList: [],
-      orderStatus : status,
-      detailVisiable : false,
+      orderStatus : {
+    UNPAID  : {status : 0, description : '待付款'},
+    PAID : {status : 1, description : '已付款'},
+    SHIPPED : {status : 2 , description : '已发货'},
+    COMPLETED : {status : 3 , description : '已完成'},
+    CLOSED : {status : 4, description : '已关闭'},
+},
+      visible : false,
       date : null,
       columns: [
           {
@@ -229,6 +227,29 @@ export default {
     openDetail(record) {
         const id = record.orderId
         this.$router.push(`/order/detail/${id}`)
+    },
+    deleteOrder(record) {
+      const that = this
+      this.$confirm({
+        title : "删除订单",
+        content : "删除后将不可恢复,是否删除该订单?",
+        onOk() {
+          deleteOrder(record.orderId).then(res=>{
+            if (res.success) {
+              notification.success({
+                message : '成功',
+                description : "删除订单成功"
+              })
+              that.queryData(that.queryParam)
+            } else {
+              notification.error({
+                message : '失败',
+                description : res.msg
+              })
+            }
+          })
+        }
+      })
     }
   },
 }
