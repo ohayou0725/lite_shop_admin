@@ -301,7 +301,7 @@ export default {
       let sku = {}
       sku.img = data.img
       sku.stock = data.stock
-      // sku.price = data.price
+      sku.price = data.price
       sku.skuId = data.skuId
       sku.stockWarningCount = data.stockWarningCount
       editSku(sku).then((res) => {
