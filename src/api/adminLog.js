@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 const logApi = {
-  logList: '/user/log/list'
+  logList: 'system/user/log/list'
 }
 
 

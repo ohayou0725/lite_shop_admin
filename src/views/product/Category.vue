@@ -73,7 +73,7 @@
       :body-style="{ paddingBottom: '80px' }"
     >
       <a-form :form="form" @submit="submit">
-        <a-form-item label="分类名称" :required="true"
+        <a-form-item label="分类名称" :required="true" has-feedback
         >
           <a-input name="name" placeholder="分类名" v-decorator=
             "['name',{initialValue: selectCategory.name?selectCategory.name:'' ,rules:[{required:true,message:'必须输入分类名'}]}]"></a-input>
@@ -94,6 +94,7 @@
         <a-form-item
           label="分类级别"
           :required="true"
+          
         >
           <a-radio-group v-decorator="['level', { initialValue: selectCategory.level }]" @change="radioChange">
             <a-radio :value="0">一级</a-radio>
@@ -102,7 +103,7 @@
           </a-radio-group>
           <a-form-item :required="this.form.getFieldValue('level') === 1 || this.form.getFieldValue('level') === 2"
                        v-show="this.form.getFieldValue('level') === 1 || this.form.getFieldValue('level') === 2"
-                       label="选择父级分类">
+                       label="选择父级分类" has-feedback>
             <a-select show-search allowClear
                       v-decorator="['parentId',{ initialValue:selectCategory.parentId}]">
               <a-select-option v-for="item in selectList" :key="item.id">
@@ -111,7 +112,7 @@
             </a-select>
           </a-form-item>
         </a-form-item>
-        <a-form-item label="排序" :required="true"
+        <a-form-item label="排序" :required="true" has-feedback
         >
           <a-input-number :min="0" v-decorator=
             "['sort',{initialValue: selectCategory.sort ?selectCategory.sort:'' ,rules:[{required:true,message:'必须输排序号'}]}]" />

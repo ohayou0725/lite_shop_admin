@@ -21,7 +21,7 @@
           </a-col>
           <a-col :md="8" :sm="26">
             <a-form-item label="申请日期">
-              <a-date-picker @change="onChange"></a-date-picker>
+              <a-date-picker v-model="queryParam.applyAfterSaleTime"></a-date-picker>
             </a-form-item>
           </a-col>
           <a-col :md="8" :sm="24" :offset="16">
@@ -259,14 +259,15 @@ export default {
     this.queryData(this.queryParam)
   },
   methods: {
-    onChange(date, dateString) {
-      this.queryParam.applyAfterSaleTime = date.format('YYYY-MM-DD HH:mm:ss')
-    },
+    
     query() {
       this.queryData(this.queryParam)
     },
     queryData(param) {
       this.loading = true
+      if (param.applyAfterSaleTime) {
+        param.applyAfterSaleTime = param.applyAfterSaleTime.format('YYYY-MM-DD HH:mm:ss')
+      }
       afterSaleList(param).then((res) => {
         if (res.success) {
           this.list = res.data.page.list

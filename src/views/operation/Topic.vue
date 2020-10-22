@@ -122,7 +122,7 @@
       @afterClose="()=>detailCache=null"
     >
       <a-form :form="form">
-        <a-form-item label="专题标题" :labelCol="labelCol" :wrapperCol="wrapperCol" required>
+        <a-form-item label="专题标题" :labelCol="labelCol" :wrapperCol="wrapperCol" required has-feedback>
           <a-input
             v-decorator="['title', 
           { initialValue: isEdit ? selectTopic.title : '' },
@@ -131,7 +131,7 @@
           }]"
           />
         </a-form-item>
-        <a-form-item label="专题子标题" :labelCol="labelCol" :wrapperCol="wrapperCol" required>
+        <a-form-item label="专题子标题" :labelCol="labelCol" :wrapperCol="wrapperCol" required has-feedback>
           <a-input
             v-decorator="['subtitle',
           { initialValue: isEdit ? selectTopic.subtitle : '' },
@@ -155,7 +155,7 @@
             </div>
           </a-upload>
         </a-form-item>
-        <a-form-item label="排序号" :labelCol="labelCol" :wrapperCol="wrapperCol" required>
+        <a-form-item label="排序号" :labelCol="labelCol" :wrapperCol="wrapperCol" required has-feedback>
           <a-input-number
             v-decorator="['sort', 
           { initialValue: isEdit ? selectTopic.sort : 0 },

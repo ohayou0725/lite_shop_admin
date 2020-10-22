@@ -59,7 +59,7 @@
     </a-card>
     <a-modal v-model="visible" :title="modalTitle" :destroyOnClose="true" @ok="handleSubmit">
       <a-form @submit="handleSubmit" :form="form">
-        <a-form-item label="品牌商名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="品牌商名称" :labelCol="labelCol" :wrapperCol="wrapperCol" has-feedback>
           <a-input v-decorator="['name', {rules:[{required: true, message: '请输入品牌商名称'}]}]" />
         </a-form-item>
         <a-form-item label="品牌logo" :labelCol="labelCol" :wrapperCol="wrapperCol">
@@ -78,12 +78,12 @@
             </a-button>
           </a-upload>
         </a-form-item>
-        <a-form-item label="品牌简介" :labelCol="labelCol" :wrapperCol="wrapperCol">
+        <a-form-item label="品牌简介" :labelCol="labelCol" :wrapperCol="wrapperCol" has-feedback>
           <a-textarea
             v-decorator="['introduction', {rules:[{required: true, message: '请输入品牌简介'}]}]"
           />
         </a-form-item>
-        <a-form-item label="所属分类" :labelCol="labelCol" :wrapperCol="wrapperCol" v-if="isAdd">
+        <a-form-item label="所属分类" :labelCol="labelCol" :wrapperCol="wrapperCol" v-if="isAdd" has-feedback>
           <a-tree-select
             v-decorator="['categoryIds', {rules:[{required: true, message: '请选择所属分类'}]}]"
             :dropdown-style="{ maxHeight: '300px', overflow: 'auto' }"

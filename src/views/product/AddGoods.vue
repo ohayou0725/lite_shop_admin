@@ -12,6 +12,7 @@
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
           help="输入商品编号后回车可查询已保存商品信息"
+          has-feedback
         >
           <a-input
             v-decorator="[
@@ -25,6 +26,7 @@
           />
         </a-form-item>
         <a-form-item
+        has-feedback
           label="商品名称"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
@@ -39,6 +41,7 @@
           />
         </a-form-item>
         <a-form-item
+        has-feedback
           label="商品标题"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
@@ -53,6 +56,7 @@
           />
         </a-form-item>
         <a-form-item
+        has-feedback
           label="商品简介"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
@@ -68,6 +72,7 @@
         </a-form-item>
 
         <a-form-item
+        has-feedback
           label="选择商品分类"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 6}, sm: {span: 17} }"
@@ -83,6 +88,7 @@
           />
         </a-form-item>
         <a-form-item
+        has-feedback
           label="选择所属品牌商"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 6}, sm: {span: 17} }"
@@ -105,6 +111,7 @@
           </a-select>
         </a-form-item>
         <a-form-item
+        has-feedback
           label="商品单位"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 2}, sm: {span: 2} }"
@@ -120,6 +127,7 @@
           />
         </a-form-item>
         <a-form-item
+        has-feedback
           label="商品底价"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 2}, sm: {span: 2} }"
@@ -138,6 +146,7 @@
         </a-form-item>
         <a-form-item
           label="是否有折扣"
+          has-feedback
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 3}, sm: {span: 2} }"
           :required="true"
@@ -149,6 +158,7 @@
         </a-form-item>
         <div v-if="discount == 2">
           <a-form-item
+          has-feedback
             label="折扣价"
             :labelCol="{lg: {span: 7}, sm: {span: 7}}"
             :wrapperCol="{lg: {span: 2}, sm: {span: 2} }"
@@ -169,6 +179,7 @@
         </div>
         <a-form-item
           label="商品重量(单位:kg)"
+          has-feedback
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 2}, sm: {span: 2} }"
           :required="true"
@@ -182,6 +193,7 @@
           />
         </a-form-item>
         <a-form-item
+        has-feedback
           label="排序号"
           :labelCol="{lg: {span: 7}, sm: {span: 7}}"
           :wrapperCol="{lg: {span: 2}, sm: {span: 2} }"

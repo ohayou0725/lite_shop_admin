@@ -124,6 +124,7 @@
           <a-form-item
             label="优惠券名称"
             required
+            has-feedback
             :labelCol="{lg: {span: 7}, sm: {span: 7}}"
             :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
           >
@@ -137,6 +138,7 @@
           </a-form-item>
           <a-form-item
             label="优惠券介绍"
+            has-feedback
             required
             :labelCol="{lg: {span: 7}, sm: {span: 7}}"
             :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
@@ -151,12 +153,14 @@
           </a-form-item>
           <a-form-item
             label="最低消费金额"
+            has-feedback
             required
             :labelCol="{lg: {span: 7}, sm: {span: 7}}"
             :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
           >
             <a-input-number
               style="width:120px"
+              has-feedback
               :min="1"
               :formatter="value => `￥ ${value}元`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
               v-decorator="[
@@ -168,6 +172,7 @@
           <a-form-item
             label="减免金额"
             required
+            has-feedback
             :labelCol="{lg: {span: 7}, sm: {span: 7}}"
             :wrapperCol="{lg: {span: 10}, sm: {span: 17} }"
           >
@@ -183,6 +188,7 @@
           </a-form-item>
           <a-form-item
             label="发放数量"
+            has-feedback
             help="如输入0则为无限"
             required
             :labelCol="{lg: {span: 7}, sm: {span: 7}}"
@@ -199,6 +205,7 @@
             ></a-input-number>
           </a-form-item>
           <a-form-item
+          has-feedback
             label="每人领取限制"
             help="如输入0则为无限制"
             required
@@ -216,6 +223,7 @@
             ></a-input-number>
           </a-form-item>
           <a-form-item
+          has-feedback
             label="有效期"
             required
             :labelCol="{lg: {span: 7}, sm: {span: 7}}"
