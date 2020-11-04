@@ -16,7 +16,7 @@
             checkStrictly
             :treeData="tree"
             :replaceFields="fields"
-            v-model:checkedKeys="checkedKeys"
+            v-model="checkedKeys"
             @select="select"
             checkable>
 

@@ -53,7 +53,8 @@ import {
   Collapse,
   Rate,
   Comment,
-  Empty
+  Empty,
+  Transfer
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 
@@ -115,6 +116,7 @@ Vue.use(Collapse)
 Vue.use(Rate)
 Vue.use(Comment)
 Vue.use(Empty)
+Vue.use(Transfer)
 
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message
