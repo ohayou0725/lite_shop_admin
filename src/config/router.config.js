@@ -191,7 +191,6 @@ export const asyncRouterMap = [
         name : 'setting',
         component: RouteView,
         meta : {title: '系统设置',keepAlive: true, icon: 'setting',permission:['超级管理员','运营管理员','订单管理员']},
-        redirect: '/setting',
         children: [
           {
             path: '/setting/order',

@@ -4,7 +4,10 @@
 
 <script>
     export default {
-        name: 'MemberStatistics'
+        name: 'MemberStatistics',
+        components : {
+            Bar
+        }
     }
 </script>
 
