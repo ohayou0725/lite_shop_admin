@@ -212,7 +212,6 @@ export const asyncRouterMap = [
         name : 'statistics',
         component: RouteView,
         meta : {title: '统计报表',keepAlive: true, icon: 'calculator',permission:['超级管理员','商品管理员','订单管理员']},
-        redirect: '/statistics',
         children: [
           {
             path: '/statistics/member',
