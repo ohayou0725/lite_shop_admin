@@ -5,7 +5,9 @@ const api = {
   addUser : 'system/user/add',
   resetPassword : 'system/user/resetPassword',
   updateUser : 'system/user/update',
-  deleteUser : 'system/user/delete'
+  deleteUser : 'system/user/delete',
+  updatePassword : 'user/updatePassword',
+  updateUserInfo : 'user/updateUserInfo'
 }
 
 
@@ -44,5 +46,21 @@ export function addUser (data) {
     return request({
       url : api.deleteUser + `/${id}`,
       method : 'post',
+    })
+  }
+
+  export function updatePassword (id,params) {
+    return request({
+      url : api.updatePassword + `/${id}`,
+      method : 'post',
+      data : params
+    })
+  }
+
+  export function updateUserInfo (params) {
+    return request({
+      url : api.updateUserInfo,
+      method : 'post',
+      data : params
     })
   }

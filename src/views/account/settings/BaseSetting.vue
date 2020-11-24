@@ -5,48 +5,22 @@
 
         <a-form layout="vertical">
           <a-form-item
-            label="昵称"
+            label="真实姓名"
           >
-            <a-input placeholder="给自己起个名字" />
+            <a-input placeholder="输入真实姓名" v-model="form.name" />
           </a-form-item>
-          <a-form-item
-            label="Bio"
-          >
-            <a-textarea rows="4" placeholder="You are not alone."/>
-          </a-form-item>
-
+          
           <a-form-item
             label="电子邮件"
             :required="false"
           >
-            <a-input placeholder="exp@admin.com"/>
+            <a-input placeholder="exp@admin.com" v-model="form.email"/>
           </a-form-item>
-          <a-form-item
-            label="加密方式"
-            :required="false"
-          >
-            <a-select defaultValue="aes-256-cfb">
-              <a-select-option value="aes-256-cfb">aes-256-cfb</a-select-option>
-              <a-select-option value="aes-128-cfb">aes-128-cfb</a-select-option>
-              <a-select-option value="chacha20">chacha20</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item
-            label="连接密码"
-            :required="false"
-          >
-            <a-input placeholder="h3gSbecd"/>
-          </a-form-item>
-          <a-form-item
-            label="登录密码"
-            :required="false"
-          >
-            <a-input placeholder="密码"/>
-          </a-form-item>
+          
 
           <a-form-item>
-            <a-button type="primary">提交</a-button>
-            <a-button style="margin-left: 8px">保存</a-button>
+            <a-button type="primary" @click="submitForm">提交</a-button>
+            <a-button style="margin-left: 8px" type="danger" @click="reset">重置</a-button>
           </a-form-item>
         </a-form>
 
@@ -57,7 +31,7 @@
           <div class="mask">
             <a-icon type="plus" />
           </div>
-          <img :src="option.img"/>
+          <img :src="form.avatar"/>
         </div>
       </a-col>
 
@@ -70,6 +44,10 @@
 
 <script>
 import AvatarModal from './AvatarModal'
+import { updateUser, updateUserInfo } from '@/api/admin'
+import { notification } from 'ant-design-vue'
+import { mapActions } from 'vuex'
+
 
 export default {
   components: {
@@ -78,10 +56,13 @@ export default {
   data () {
     return {
       // cropper
+      userInfo : {},
+      form : {},
       preview: {},
       option: {
         img: '/avatar2.jpg',
         info: true,
+        form : {},
         size: 1,
         outputType: 'jpeg',
         canScale: false,
@@ -96,9 +77,38 @@ export default {
       }
     }
   },
+  mounted() {
+    const userInfo = JSON.stringify(this.$store.getters.userInfo)
+    this.form = JSON.parse(userInfo)
+  },
   methods: {
+    ...mapActions(['GetInfo']),
     setavatar (url) {
-      this.option.img = url
+      this.form.avatar = url
+    },
+    reset() {
+      this.form.name = "",
+      this.form.email = ""
+    },
+    submitForm() {
+      updateUserInfo({
+        id : this.form.id,
+        name:this.form.name,
+        email : this.form.email,
+        avatar : this.form.avatar }).then(res=>{
+          if (res.success) {
+            notification.success({
+              message : "成功",
+              description : "修改成功"
+            })
+            this.GetInfo()
+          } else {
+            notification.success({
+              message : "失败",
+              description : res.msg
+            })
+          }
+        })
     }
   }
 }
