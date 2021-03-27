@@ -44,11 +44,11 @@
     </template>
     <a-modal v-model="trackVisiable">
         <a-spin :spinning="this.track.length < 1">
-            <a-steps direction="vertical" size="small" :current="track.length-1">
+            <a-steps direction="vertical" size="small" :current="0">
                 <a-step 
                 v-for="(item,index) in track" :key="index"
-                :title="item.AcceptStation"
-                :description="item.AcceptTime" ></a-step>
+                :title="item.status"
+                :description="item.time" ></a-step>
             </a-steps>
         </a-spin>
     </a-modal>
@@ -226,9 +226,10 @@ export default {
     queryTrack() {
         queryTrack(this.detail.orderId).then(res=>{
             if (res.success) {
-                this.track = res.data.data.Traces
+                this.track = res.data.data
             } else {
-                notification({
+                this.trackVisiable = false
+                notification.error({
                     message : "失败",
                     description : res.msg
                 })

@@ -254,12 +254,16 @@ export default {
     },
     queryData(param) {
       this.loading = true
+      
       if (param.createTime) {
         param.createTime = param.createTime.format('YYYY-MM-DD HH:mm:ss')
       }
       userList(param).then((res) => {
         if (res.success) {
           this.list = res.data.page.list
+          this.pagination.defaultCurrent= res.data.page.currPage
+          this.pagination.defaultPageSize = res.data.page.pageSize
+          this.pagination.total = res.data.page.totalCount
         } else {
           notification.error({
             message: '失败',

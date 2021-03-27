@@ -32,7 +32,7 @@
         </a-form>
       </div>
 
-      <a-table :data-source="list" :loading="loading" :columns="columns" rowKey="{record=>record.id}" :pagination="pagination">
+      <a-table :data-source="list" :loading="loading" :columns="columns" rowKey="id" :pagination="pagination">
         <template slot-scope="text,record" slot="optStatus">
             <a-tag v-if="text===statusMap.success.status" color="#87d068">{{statusMap.success.text}}</a-tag>
             <a-tag v-else color="#f50">{{statusMap.success.text}}</a-tag>

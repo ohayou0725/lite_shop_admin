@@ -402,6 +402,9 @@ export default {
       getBrandList(this.queryParam).then((res) => {
         if (res.success) {
           this.list = res.data.page.list
+          this.pagination.defaultCurrent= res.data.page.currPage
+          this.pagination.defaultPageSize = res.data.page.pageSize
+          this.pagination.total = res.data.page.totalCount
           for (let i = 0; i < this.list.length; i++) {
             this.list[i].abbreviation = cutString(this.list[i].introduction, 45)
           }

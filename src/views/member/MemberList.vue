@@ -60,7 +60,7 @@
             </a-form>
           </div>
 
-          <a-table bordered :data-source="list" :loading="loading" :columns="columns" rowKey="{record=>record.id}" :pagination="pagination">
+          <a-table bordered :data-source="list" :loading="loading" :columns="columns" rowKey="id" :pagination="pagination">
               <template slot-scope="text,record" slot="status">
                 <div>
                   <a-switch :checked="text == '1'" @change="changeStatus(record)"></a-switch>
@@ -175,6 +175,9 @@
           if (res.success) {
             const data = res.data.page
             this.list = data.list
+            this.pagination.defaultCurrent= data.currPage
+             this.pagination.defaultPageSize = data.pageSize
+            this.pagination.total = data.totalCount
           } else {
             notification.error({
               message: '错误',
@@ -191,7 +194,6 @@
         this.getData(this.queryParam)
       },
       selectDate(date,dateString) {
-        console.log(dateString)
         this.queryParam.registerDate = date !== null ? dateString : null
       },
       changeStatus(record) {

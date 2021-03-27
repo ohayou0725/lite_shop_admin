@@ -214,6 +214,9 @@ export default {
       this.loading = true
       commentList(param).then((res) => {
         if (res.success) {
+          this.pagination.defaultCurrent= res.data.list.currPage
+          this.pagination.defaultPageSize = res.data.list.pageSize
+          this.pagination.total = res.data.list.totalCount
           this.commentList = res.data.list.list.filter((item) => item != null)
           this.commentList.forEach((item) => {
             let specAndValue = item.specAndValue

@@ -29,7 +29,7 @@
         </a-form>
       </div>
 
-            <a-table bordered :data-source="list" :loading="loading" :columns="columns" rowKey="{record=>record.id}" :pagination="pagination">
+            <a-table bordered :data-source="list" :loading="loading" :columns="columns" rowKey="id" :pagination="pagination">
 
             </a-table>
     </a-card>
@@ -133,7 +133,6 @@
       getData(param) {
         this.loading = true
         getAddrList(param).then(res=>{
-          console.log(res)
           if (res.success) {
             const data = res.data.page
             this.list = data.list

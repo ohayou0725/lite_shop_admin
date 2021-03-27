@@ -50,7 +50,7 @@
               添加属性
             </a-button></div>
           <a-table :data-source="selectCategory.attrs" :loading="loading" :columns="columns" :pagination="false"
-                   rowKey="{record=>record.id}">
+                   rowKey="id">
           <span slot="action" slot-scope="text, record">
           <template>
               <a-button icon="edit" size="small" type="primary" shape="round" @click="editAttr(record)"></a-button>
@@ -78,10 +78,12 @@
           <a-input name="name" placeholder="分类名" v-decorator=
             "['name',{initialValue: selectCategory.name?selectCategory.name:'' ,rules:[{required:true,message:'必须输入分类名'}]}]"></a-input>
         </a-form-item>
-        <a-form-item label="分类图标">
-          <a-input name="icon" placeholder="分类图标" v-decorator="['icon',{initialValue:selectCategory.icon?selectCategory.icon:''}]"></a-input>
+        <a-form-item label="分类图标url">
+          <a-input name="icon" @blur="changeIcon()" placeholder="url" v-decorator="['icon',{initialValue:selectCategory.icon?selectCategory.icon:''}]"></a-input>
         </a-form-item>
-
+        <a-form-item label="图标预览">
+          <img :src="selectIcon" />
+        </a-form-item>
         <a-form-item label="分类图片">
           <a-upload :fileList="fileList" list-type="picture" :beforeUpload="checkFile"
                     :action="uploadUrl" :headers="header" @change="afterUpload" :file-list="fileList">
@@ -104,13 +106,25 @@
           <a-form-item :required="this.form.getFieldValue('level') === 1 || this.form.getFieldValue('level') === 2"
                        v-show="this.form.getFieldValue('level') === 1 || this.form.getFieldValue('level') === 2"
                        label="选择父级分类" has-feedback>
-            <a-select show-search allowClear
-                      v-decorator="['parentId',{ initialValue:selectCategory.parentId}]">
+            <a-select show-search allowClear v-if="this.form.getFieldValue('level') === 1"
+                      v-decorator="['parentId',{ initialValue:selectCategory.parentId ,
+                      rules:[{required:this.form.getFieldValue('level') === 1,message:'请选择父级分类'}]}]">
               <a-select-option v-for="item in selectList" :key="item.id">
                 {{item.name}}
               </a-select-option>
             </a-select>
+            <a-cascader 
+            v-decorator="['parentIds',{initialValue:this.parentIds,rules:[{required:this.form.getFieldValue('level') === 2,message:'请选择父级分类'}]}]"
+            v-else placeholder="请选择二级分类" :options="options" :fieldNames="fieldNames">
+
+            </a-cascader>
           </a-form-item>
+        </a-form-item>
+        <a-form-item label="是否为热门推荐" v-if="this.form.getFieldValue('level') === 2">
+          <a-switch
+          v-decorator="['hot', { initialValue: selectCategory.hot }]"  >
+
+          </a-switch>
         </a-form-item>
         <a-form-item label="排序" :required="true" has-feedback
         >
@@ -159,6 +173,8 @@
   import {addAttr} from '@/api/category'
   import notification from 'ant-design-vue/lib/notification'
   import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { values } from 'mockjs2'
+import path from 'core-js/web'
 
   export default {
     name: 'Category',
@@ -169,6 +185,7 @@
           Authorization: window.sessionStorage.getItem(ACCESS_TOKEN)
         },
         tree: [],
+        // selectIcon : '',
         loading: false,
         selectCategory: {},
         checkedKeys: {
@@ -181,7 +198,9 @@
           key: 'id'
         },
         defaultKeys: [],
+        parentIds : [],
         keyWord: '',
+        options:[],
         isAdd: false,
         param: {},
         form: this.$form.createForm(this),
@@ -200,8 +219,10 @@
           attrName : '',
           sort : 0
         },
+        selectIcon : '',
         matchValue : [],
         isAddAttr : false,
+        fieldNames : {label:'name',value:'id',children:'children'},
         columns: [
           {
             title: '序号',
@@ -250,13 +271,14 @@
       },
       drawerTitle: function () {
         return this.isAdd ? '添加分类' : '编辑分类'
-      }
+      },
+      
     },
 
     created () {
       this.getCategory()
     },
-
+    
     methods: {
       clickAdd () {
         this.isAdd = true
@@ -267,6 +289,19 @@
       editCate () {
         this.isAdd = false
         this.showDrawer()
+        if (this.selectCategory.level == 2) {
+            this.getOptions()
+            let parentIds = []
+            this.tree.forEach(item=>{
+              item.children.forEach(item1=>{
+                if (item1.id == this.selectCategory.parentId) {
+                  parentIds.push(item1.parentId)
+                }
+              })
+            })
+            parentIds.push(this.selectCategory.parentId)
+            this.parentIds = parentIds
+        }
       },
       select (keys, event) {
         const id = keys[0]
@@ -306,11 +341,15 @@
             return
           }
           values.img = this.uploadImg
-          if (this.isAdd) {
-            const parentId = this.form.getFieldValue("parentId")
-            if (parentId === null) {
-              values.parentId = 0
+          if (values.level == 1) {
+                values.parentId = this.form.getFieldValue("parentId")
+            } else if(values.level == 2){
+                values.parentId = this.form.getFieldValue("parentIds")[1]
+            } else {
+               values.parentId = 0
             }
+          values.hot = values.hot ? 1 : 0
+          if (this.isAdd) {
             add(values).then(res => {
               if (res.success) {
                 this.onClose()
@@ -378,6 +417,7 @@
         this.visible = false
         this.selectCategory.parentId = null
         this.fileList = []
+        this.selectIcon = '',
         this.form.resetFields()
       },
       editAttr(record) {
@@ -467,13 +507,30 @@
         this.form.setFieldsValue({
           'parentId': null
         })
+        
         const value = event.target.value - 1
-        this.getCateByLevel(value)
+        if (value==0) {
+            this.getCateByLevel(value)
+        } else if(value == 1) {
+            let data = JSON.parse(JSON.stringify(this.tree))
+            data = data.filter(item=>{
+              return item.children.length > 0
+            })
+            data.forEach(item=>{
+              if (item.children) {
+                item.children.forEach(item1=>{
+                  item1.children = []
+                })
+              }
+            })
+            this.options = data
+        }
       },
     getCategoryDetail (id) {
         getDetail(id).then(res => {
           if (res.success) {
             this.selectCategory = res.data.detail
+            this.selectIcon = this.selectCategory.icon
           } else {
             notification.error({
               message: '错误',
@@ -540,7 +597,25 @@
             })
           }
         })
+      },
+      changeIcon() {
+        this.selectIcon = this.form.getFieldValue("icon")
+      },
+      getOptions() {
+        let data = JSON.parse(JSON.stringify(this.tree))
+            data = data.filter(item=>{
+              return item.children.length > 0
+            })
+            data.forEach(item=>{
+              if (item.children) {
+                item.children.forEach(item1=>{
+                  item1.children = []
+                })
+              }
+            })
+            this.options = data
       }
+
 
     }
   }

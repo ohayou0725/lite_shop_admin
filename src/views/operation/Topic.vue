@@ -47,6 +47,10 @@
       <template slot="isShow" slot-scope="text,record">
         <a-switch :checked="text==1" @click="change(record)"></a-switch>
       </template>
+      <template slot="position" slot-scope="text,record">
+        <span v-if="text==0">首页轮播图</span>
+        <span v-else>精选专场</span>
+      </template>
       <template slot="action" slot-scope="text,record">
         <a @click="openDetail(record)">专题详情</a>
         <a-divider type="vertical" />
@@ -154,6 +158,19 @@
               <div class="ant-upload-text">上传</div>
             </div>
           </a-upload>
+        </a-form-item>
+        <a-form-item label="显示位置" :labelCol="labelCol" :wrapperCol="wrapperCol" required help="如精选专场已有专题，则会替换当前专题">
+          <a-radio-group 
+          v-decorator="['position', 
+          { initialValue: isEdit ?  selectTopic.position :0 },
+          {rules:[{required: true, message: '必须设置显示位置'}]}]">
+            <a-radio :value="0">
+                首页轮播图
+            </a-radio>
+            <a-radio :value="1">
+                精选专场
+            </a-radio>
+          </a-radio-group>
         </a-form-item>
         <a-form-item label="排序号" :labelCol="labelCol" :wrapperCol="wrapperCol" required has-feedback>
           <a-input-number
@@ -279,6 +296,12 @@ export default {
           scopedSlots: { customRender: 'isShow' },
         },
         {
+          title: '显示位置',
+          dataIndex: 'position',
+          align: 'center',
+          scopedSlots: { customRender: 'position' },
+        },
+        {
           title: '操作',
           dataIndex: 'action',
           align: 'center',
@@ -321,6 +344,7 @@ export default {
   methods: {
     query() {
       this.queryData(this.queryParam)
+      
     },
     change(record) {
       const newIsShow = 1 - record.isShow
@@ -464,15 +488,20 @@ export default {
       })
     },
     queryData(params) {
+      this.loading = true
       getTopicList(params).then((res) => {
         if (res.success) {
           this.list = res.data.page.list
+          this.pagination.defaultCurrent= res.data.page.currPage
+          this.pagination.defaultPageSize = res.data.page.pageSize
+          this.pagination.total = res.data.page.totalCount
         } else {
           notification.error({
             message: '失败',
             description: res.msg,
           })
         }
+      this.loading = false
       })
     },
     submitForm() {

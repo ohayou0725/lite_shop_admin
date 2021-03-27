@@ -27,7 +27,7 @@
         </a-form>
       </div>
 
-      <a-table bordered :data-source="list" :loading="loading" :columns="columns" rowKey="{record=>record.id}"
+      <a-table bordered :data-source="list" :loading="loading" :columns="columns" rowKey="mobile"
                :pagination="pagination">
         <template slot-scope="text,record" slot="img">
           <img :src="record.img" alt="点击放大预览" width="100" height="50" preview="0">
@@ -154,6 +154,9 @@
           if (res.success) {
             const data = res.data.page
             this.list = data.list
+            this.pagination.defaultCurrent= data.currPage
+             this.pagination.defaultPageSize = data.pageSize
+            this.pagination.total = data.totalCount
           } else {
             notification.error({
               message: '错误',

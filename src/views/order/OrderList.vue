@@ -116,7 +116,7 @@ export default {
           {
           title: '序号',
           align: 'center',
-          width: '40px',
+          // width: '40px',
           customRender: (value, row, index) => {
             return `${(this.pagination.defaultCurrent - 1) * this.pagination.defaultPageSize + index + 1}`
           },
@@ -170,6 +170,7 @@ export default {
           title: '操作',
           dataIndex: 'action',
           align: 'center',
+          width : '80px',
           scopedSlots: { customRender: 'action' },
         },
 
@@ -187,6 +188,8 @@ export default {
           this.queryParam.page = this.pagination.defaultCurrent
           this.queryParam.size = this.pagination.defaultPageSize
           this.queryData(this.queryParam)
+          this.loading = false
+          console.log(this.queryParam)
         },
         onChange: (current, size) => {
           this.pagination.defaultCurrent = current
@@ -194,6 +197,7 @@ export default {
           this.queryParam.page = this.pagination.defaultCurrent
           this.queryParam.size = this.pagination.defaultPageSize
           this.queryData(this.queryParam)
+          this.loading = false
         },
       },
     }
@@ -215,6 +219,9 @@ export default {
       getList(param).then((res) => {
         if (res.success) {
           this.orderList = res.data.page.list
+          this.pagination.defaultCurrent= res.data.page.currPage
+          this.pagination.defaultPageSize = res.data.page.pageSize
+          this.pagination.total = res.data.page.totalCount
         } else {
           notification.error({
             message: '失败',

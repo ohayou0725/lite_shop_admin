@@ -619,6 +619,9 @@ export default {
       getSpuList(param).then((res) => {
         if (res.success) {
           this.spuList = res.data.list.list
+          this.pagination.defaultCurrent= res.data.list.currPage
+          this.pagination.defaultPageSize = res.data.list.pageSize
+          this.pagination.total = res.data.list.totalCount
         } else {
           notification.error({
             message: '错误',
@@ -746,6 +749,10 @@ export default {
         return
       }
       this.goodsForm.specs = this.specList
+      this.goodsForm.specs.forEach(item=>{
+        item.spec.createTime = null
+        item.spec.updateTime = null
+      })
       editSpec(this.goodsForm).then((res) => {
         if (res.success) {
           notification.success({

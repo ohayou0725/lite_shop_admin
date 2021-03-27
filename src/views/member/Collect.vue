@@ -24,7 +24,7 @@
         </a-form>
       </div>
 
-      <a-table bordered :data-source="list" :loading="loading" :columns="columns" rowKey="{record=>record.id}"
+      <a-table bordered :data-source="list" :loading="loading" :columns="columns" rowKey="id"
                :pagination="pagination">
 
       </a-table>
@@ -115,6 +115,9 @@
           if (res.success) {
             const data = res.data.page
             this.list = data.list
+            this.pagination.defaultCurrent= data.currPage
+             this.pagination.defaultPageSize = data.pageSize
+            this.pagination.total = data.totalCount
           } else {
             notification.error({
               message: '错误',
