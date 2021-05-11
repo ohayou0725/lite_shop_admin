@@ -7,7 +7,9 @@ const api = {
   updateUser : 'system/user/update',
   deleteUser : 'system/user/delete',
   updatePassword : 'user/updatePassword',
-  updateUserInfo : 'user/updateUserInfo'
+  updateUserInfo : 'user/updateUserInfo',
+  chatRecords : 'user/service/chatRecord',
+  updateChat : 'user/service/readRecord'
 }
 
 
@@ -62,5 +64,20 @@ export function addUser (data) {
       url : api.updateUserInfo,
       method : 'post',
       data : params
+    })
+  }
+
+  export function getChatRecords () {
+    return request({
+      url : api.chatRecords,
+      method : 'get',
+    })
+  }
+
+  export function updateChat (params) {
+    return request({
+      url : api.updateChat,
+      method : 'post',
+      params 
     })
   }

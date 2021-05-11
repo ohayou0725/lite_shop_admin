@@ -64,8 +64,8 @@
         opinionType : opinionType,
         queryParam: {
           mobile: '',
-          page: '',
-          size: ''
+          page: '1',
+          size: '10'
         },
         columns: [
           {

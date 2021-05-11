@@ -176,7 +176,7 @@
             const data = res.data.page
             this.list = data.list
             this.pagination.defaultCurrent= data.currPage
-             this.pagination.defaultPageSize = data.pageSize
+            this.pagination.defaultPageSize = data.pageSize
             this.pagination.total = data.totalCount
           } else {
             notification.error({

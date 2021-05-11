@@ -45,8 +45,8 @@
         queryParam: {
           mobile: '',
           spuSn: '',
-          page: '',
-          size: ''
+          page: '1',
+          size: '10'
         },
         columns: [
           {
